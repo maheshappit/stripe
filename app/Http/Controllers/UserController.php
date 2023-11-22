@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use DataTables;
-use App\Models\BdModel;
+use App\Models\ConferenceDetails;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -25,7 +25,7 @@ class UserController extends Controller
 
     // dd($request->search);
 
-    $query = BdModel::query();
+    $query = ConferenceDetails::query();
 
     if($request->search){
         $query
@@ -200,7 +200,7 @@ public function downloadReport(Request $request){
 
 
     
-    $query = BdModel::query();
+    $query = ConferenceDetails::query();
 
     $query->join('users', 'users.id', '=', 'bd.user_id');
     $query->whereBetween('bd.user_created_at', [$startDate, $endDate]);
@@ -242,7 +242,7 @@ public function downloadEmails(Request $request){
     $emails=$request->emails;
     if(isset($emails)){
         foreach($emails as $email){
-            BDModel::where('email', $email)->update(['download_count' => 1]);
+            ConferenceDetails::where('email', $email)->update(['download_count' => 1]);
         }
     }
 

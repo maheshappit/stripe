@@ -19,7 +19,6 @@
 
     .card {
         width: fit-content !important;
-        top: 80px;
 
     }
 

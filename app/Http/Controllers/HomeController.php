@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\BdModel;
+use App\Models\ConferenceDetails;
+use App\Models\Conference;
+use App\Models\Topic;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Validator;
@@ -33,61 +35,47 @@ class HomeController extends Controller
 
      public function getClients(Request $request){
 
-        $client_names = BdModel::where('country', $request->country_name)->distinct()->pluck('client_name')->toArray();
-        $dba_names = BdModel::distinct()->pluck('database_creator_name',)->toArray();
-        $countries = BdModel::distinct()->pluck('country',)->toArray();
+        $client_names = ConferenceDetails::where('country', $request->country_name)->distinct()->pluck('client_name')->toArray();
+        $dba_names = ConferenceDetails::distinct()->pluck('database_creator_name',)->toArray();
+        $countries = ConferenceDetails::distinct()->pluck('country',)->toArray();
         return view('home',compact('client_names','countries','dba_names'));
 
     }
 
 
 
-    public function allClients(Request $request, $id)
+    public function allTopics(Request $request, $id)
     {
+
 
 
 
         if ($request->id === 'All') {
             // If 'All' is selected, fetch all client names
-            $clientNames = BdModel::distinct()->pluck('client_name')->toArray();
+            $topicNames = Topic::all();
         } else {
             // Fetch client names based on the selected country ID
-            $clientNames = BdModel::where('country', $id)->distinct()->pluck('client_name')->toArray();
+            $topicNames = Topic::where('conference_id', $id)->get()->toArray();
+
         }
         
 
-        $encodedClientNames = array_map('utf8_encode', $clientNames);
-        return response()->json(['clientNames' => $encodedClientNames]);
+        return response()->json(['topicNames' => $topicNames]);
             }
 
 
     public function index()
     {
 
-        // $users_data=BdModel::latest()->paginate(100);
-        $dba_names = BdModel::distinct()->pluck('database_creator_name',)->toArray();
+        $conferences=Conference::all();
 
-        $countries = BdModel::distinct()->pluck('country',)->toArray();
-
-        $technology=BdModel::distinct()->pluck('technology',)->toArray();
-
-        $client_speciality=BdModel::distinct()->pluck('client_speciality',)->toArray();
-
-        $designation=BdModel::distinct()->pluck('designation',)->toArray();
-
-        // dd($designation);
-
-        $email_count=BdModel::distinct()->pluck('employee_count',)->toArray();
-        // dd($email_count);
-
-        // $client_names = BdModel::distinct()->pluck('client_name',)->toArray();
-
-        return view('home',compact('countries','dba_names','technology','client_speciality'));
+        
+        return view('home',compact(('conferences')));
         
     }
 
     public function edit(Request $request){
-        $user=BdModel::find($request->id);
+        $user=ConferenceDetails::find($request->id);
 
         return view('edit',compact('user'));
     }
@@ -99,7 +87,7 @@ class HomeController extends Controller
 
         $currentDateTime = $now->toDateTimeString(); 
 
-        $user= BdModel::find($request->id);
+        $user= ConferenceDetails::find($request->id);
 
 
         $validator = Validator::make($request->all(), [

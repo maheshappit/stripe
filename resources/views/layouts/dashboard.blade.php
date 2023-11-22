@@ -5,9 +5,9 @@
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <!-- SideBar-Menu CSS -->
 
-    <link rel="stylesheet" href="{{ URL::asset('assets/css/styles.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/styles.css') }}">
 
-    <link rel="stylesheet" href="{{ URL::asset('assets/css/demo.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/demo.css') }}">
 
 
 
@@ -582,7 +582,7 @@
         </div>
         <div class="menu">
             <div class="logo">
-                BD
+                STRIPE
             </div>
             <div class="right_menu">
                 <ul>
@@ -629,12 +629,33 @@
                     </div>
                 </div>
                 <ul>
+
+
+                <li>
+                        <a href="{{ route('home') }}" class="{{ ((Request::is('home')) ? 'active' : ' ') }}">
+
+
+                            <span class="icon"><i class="fas fa-dice-d6"></i></span>
+                            <span class="title">User</span>
+                        </a>
+
+                    </li>
+
+
+                    <li>
+                        <a href="{{ route('show.conferences') }}" class="{{ ((Request::is('show.conferences')) ? 'active' : ' ') }}">
+                            <span class="icon"><i class="fas fa-dice-d6"></i></span>
+                            <span class="title">Conferences</span>
+                        </a>
+
+                    </li>
+
                     <li>
                         <a href="{{ route('home') }}" class="{{ ((Request::is('home')) ? 'active' : ' ') }}">
 
 
                             <span class="icon"><i class="fas fa-dice-d6"></i></span>
-                            <span class="title">Dashboard</span>
+                            <span class="title">Database</span>
                         </a>
 
                     </li>

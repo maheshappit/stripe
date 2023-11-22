@@ -172,7 +172,7 @@ const to_date = formatDate(t_date);
 
             <div>
                 <label for="country">From Date:</label>
-                <input type="datetime-local" id="from_date" name="from_date" >
+                <input type="date" id="from_date" name="from_date" >
                 <p class="message" id="error-from_date"></p>
 
 
@@ -180,7 +180,7 @@ const to_date = formatDate(t_date);
 
             <div>
                 <label for="country">To Date:</label>
-                <input type="datetime-local" id="to_date" name="to_date">
+                <input type="date" id="to_date" name="to_date">
                 <p class="message" id="error-to_date"></p>
 
             </div>

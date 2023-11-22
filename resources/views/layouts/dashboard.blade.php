@@ -41,7 +41,7 @@
 <script>
                     $(document).ready(function() {
                         $('.country').select2();
-                        $('.client').select2();
+                        $('.conference').select2();
                         $('.db').select2();
                         $('.technology').select2();
                         $('.speciality').select2();
@@ -88,7 +88,7 @@
 
                         d.db = $('#db').val();
                         d.search = $('#search').val();
-                        d.client = $('#client').val();
+                        d.conference = $('#conference').val();
                         d.country = $('#country').val();
                         d.technology = $('#technology').val();
                         d.speciality = $('#speciality').val();
@@ -97,7 +97,7 @@
 
 
 
-                        var client_id = $('#client').val();
+                        var conference_id = $('#conference').val();
 
                         var county_id = $('#country').val();
 
@@ -116,145 +116,54 @@
                         title: 'Serial Number',
                         data: 'id'
                     },
+
                     {
-                        data: 'create_date',
-                        title: 'Create Date'
+                        title:'Name',
+                        data:'name'
+
                     },
                     {
-                        data: 'country',
-                        title: 'Country'
+                        title:'Email',
+                        data:'email'
+
                     },
+                    
+                    
                     {
-                        data: 'client_name',
-                        title: 'Client Name'
-                    },
-                    {
-                        data: 'contact_source',
-                        title: 'Contact Source'
-                    },
-                    {
-                        data: 'database_creator_name',
-                        title: 'DataBase Creator Name'
-                    },
-                    {
-                        data: 'technology',
-                        title: 'Technology'
-                    },
-                    {
-                        data: 'client_speciality',
-                        title: 'Client Speciality',
-                        "width": "2px",
-                        render: function(data, type, row) {
-                            if (type === 'display' && data != null && data.length > 10) {
-                                return `<span class="ellipsis">${data.substr(0, 10)}...</span>
-                            <span class="more-text" style="display: none;">${data}</span>
-                            <a class="show-more">More</a>`;
-                            }
-                            return data;
-                        }
-                    },
-                    {
-                        data: 'street',
-                        title: 'Street',
-                        "width": "2px",
-                        render: function(data, type, row) {
-                            if (type === 'display' && data != null && data.length > 10) {
-                                return `<span class="ellipsis">${data.substr(0, 10)}...</span>
-                            <span class="more-text" style="display: none;">${data}</span>
-                            <a class="show-more">More</a>`;
-                            }
-                            return data;
-                        }
-                    },
-                    {
-                        data: 'city',
-                        title: 'City'
-                    },
-                    {
-                        data: 'zip_code',
-                        title: 'Zip Code'
-                    },
-                    {
-                        data: 'first_name',
-                        title: 'First Name'
-                    },
-                    {
-                        data: 'website',
-                        title: 'Website'
-                    },
-                    {
-                        data: 'last_name',
-                        title: 'Last Name'
-                    },
-                    {
-                        data: 'designation',
-                        title: 'Designation'
-                    },
-                    {
-                        data: 'email',
-                        title: 'Email'
+                        title: 'Country',
+                        data: 'country'
+
                     },
 
                     {
-                        data: 'email_response_1',
-                        title: 'Email Response 1',
-                        "width": "2px",
-                        render: function(data, type, row) {
-                            if (type === 'display' && data != null && data.length > 10) {
-                                return `<span class="ellipsis">${data.substr(0, 10)}...</span>
-                            <span class="more-text" style="display: none;">${data}</span>
-                            <a class="show-more">More</a>`;
-                            }
-                            return data;
-                        }
-                    },
+                        title:'Article',
+                        data:'article'
 
-                    {
-                        data: 'email_response_2',
-                        title: 'Email Response 2',
-                        "width": "2px",
-                        render: function(data, type, row) {
-                            if (type === 'display' && data != null && data.length > 10) {
-                                return `<span class="ellipsis">${data.substr(0, 10)}...</span>
-                            <span class="more-text" style="display: none;">${data}</span>
-                            <a class="show-more">More</a>`;
-                            }
-                            return data;
-                        }
-                    },
-                    {
-                        data: 'rating',
-                        title: 'Rating'
-                    },
+                    },{
+                        title:'Conference',
+                        data:'conference'
 
-                    {
-                        data: 'followup',
-                        title: 'Followup'
                     },
-                    {
-                        data: 'linkedin_link',
-                        title: 'Linked In Link',
-                        "width": "2px",
-                        render: function(data, type, row) {
-                            if (type === 'display' && data != null && data.length > 10) {
-                                return `<span class="ellipsis">${data.substr(0, 10)}...</span>
-                            <span class="more-text" style="display: none;">${data}</span>
-                            <a class="show-more">More</a>`;
-                            }
-                            return data;
-                        }
-                    },
+                    
 
-                    {
-                        data: 'employee_count',
-                        title: 'Employee Count'
-                    },
+                   
+                    
+                   
+                    
+                   
+                   
+
+                    
+
+                   
+                    
+
 
                     {
                         mData: '',
                         render: (data, type, row) => {
                             return `
-            <a class="btn btn-primary" href='user/edit/?id=${row.id}'>Edit</a>
+            <a class="btn btn-primary" href='/conferences/edit/?id=${row.id}'>Edit</a>
         `;
                         }
                     }
@@ -308,7 +217,7 @@
 
 
             // Array of specific headers you want to target
-            var specificHeaders = ['Industry', 'State', 'Country', 'Client Name'];
+            var specificHeaders = ['Industry', 'State', 'Country', 'conference Name'];
 
             myTable.columns().every(function() {
                 var column = this;
@@ -427,20 +336,20 @@
                 $('#country').change();
 
 
-                var url = "{{ route('all-clients', ['id' => 'id']) }}";
+                var url = "{{ route('all-conferences', ['id' => 'id']) }}";
                 url = url.replace('id', my);
 
-                // Make an AJAX request to retrieve client names based on the selected country
+                // Make an AJAX request to retrieve conference names based on the selected country
                 $.ajax({
                     url: url, // Replace with your server-side script
                     type: 'GET',
                     dataType: 'json',
                     success: function(data) {
-                        // Update the client list with the retrieved data
-                        $('#client').html(displayClientNames(data.clientNames));
+                        // Update the conference list with the retrieved data
+                        $('#conference').html(displayconferenceNames(data.conferenceNames));
                     },
                     error: function(error) {
-                        console.error('Error fetching client names:', error);
+                        console.error('Error fetching conference names:', error);
                     }
                 });
 
@@ -448,20 +357,20 @@
                     // Get the selected country value
                     var selectedCountry = $(this).val();
 
-                    var url = "{{ route('all-clients', ['id' => 'id']) }}";
+                    var url = "{{ route('all-conferences', ['id' => 'id']) }}";
                     url = url.replace('id', selectedCountry);
 
-                    // Make an AJAX request to retrieve client names based on the selected country
+                    // Make an AJAX request to retrieve conference names based on the selected country
                     $.ajax({
                         url: url, // Replace with your server-side script
                         type: 'GET',
                         dataType: 'json',
                         success: function(data) {
-                            // Update the client list with the retrieved data
-                            $('#client').html(displayClientNames(data.clientNames));
+                            // Update the conference list with the retrieved data
+                            $('#conference').html(displayconferenceNames(data.conferenceNames));
                         },
                         error: function(error) {
-                            console.error('Error fetching client names:', error);
+                            console.error('Error fetching conference names:', error);
                         }
                     });
                 });
@@ -469,11 +378,11 @@
 
 
 
-                function displayClientNames(clientNames) {
-                    var html = '<select id="client" class="client"> <option>All</option>';
+                function displayconferenceNames(conferenceNames) {
+                    var html = '<select id="conference" class="conference"> <option>All</option>';
 
-                    $.each(clientNames, function(index, clientName) {
-                        html += '<option>' + clientName + '</option>';
+                    $.each(conferenceNames, function(index, conferenceName) {
+                        html += '<option>' + conferenceName + '</option>';
                     });
                     html += '</select>';
                     return html;
@@ -486,29 +395,29 @@
                     // Get the selected country value
                     var selectedCountry = $(this).val();
 
-                    var url = "{{ route('all-clients', ['id' => 'id']) }}";
+                    var url = "{{ route('all-conferences', ['id' => 'id']) }}";
                     url = url.replace('id', selectedCountry);
 
-                    // Make an AJAX request to retrieve client names based on the selected country
+                    // Make an AJAX request to retrieve conference names based on the selected country
                     $.ajax({
                         url: url, // Replace with your server-side script
                         type: 'GET',
                         dataType: 'json',
                         success: function(data) {
-                            // Update the client list with the retrieved data
-                            $('#client').html(displayClientNames(data.clientNames));
+                            // Update the conference list with the retrieved data
+                            $('#conference').html(displayconferenceNames(data.clientNames));
                         },
                         error: function(error) {
-                            console.error('Error fetching client names:', error);
+                            console.error('Error fetching conference names:', error);
                         }
                     });
                 });
 
-                function displayClientNames(clientNames) {
-                    var html = '<select id="client" class="client">';
+                function displayconferenceNames(conferenceNames) {
+                    var html = '<select id="conference" class="conference">';
 
-                    $.each(clientNames, function(index, clientName) {
-                        html += '<option>' + clientName + '</option>';
+                    $.each(conferenceNames, function(index, conferenceName) {
+                        html += '<option>' + conferenceName + '</option>';
                     });
                     html += '</select>';
                     return html;
@@ -582,7 +491,7 @@
         </div>
         <div class="menu">
             <div class="logo">
-                STRIPE
+                BD
             </div>
             <div class="right_menu">
                 <ul>
@@ -636,26 +545,16 @@
 
 
                             <span class="icon"><i class="fas fa-dice-d6"></i></span>
-                            <span class="title">User</span>
+                            <span class="title">Dashboard</span>
                         </a>
 
                     </li>
-
-
                     <li>
                         <a href="{{ route('show.conferences') }}" class="{{ ((Request::is('show.conferences')) ? 'active' : ' ') }}">
+
+
                             <span class="icon"><i class="fas fa-dice-d6"></i></span>
                             <span class="title">Conferences</span>
-                        </a>
-
-                    </li>
-
-                    <li>
-                        <a href="{{ route('home') }}" class="{{ ((Request::is('home')) ? 'active' : ' ') }}">
-
-
-                            <span class="icon"><i class="fas fa-dice-d6"></i></span>
-                            <span class="title">Database</span>
                         </a>
 
                     </li>

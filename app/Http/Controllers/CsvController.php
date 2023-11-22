@@ -1,11 +1,10 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use Validator;
 
 use Illuminate\Http\Request;
-use App\Models\ConferenceDetails;
+use App\Models\Conference;
 
 use League\Csv\Reader;
 
@@ -25,28 +24,24 @@ class CsvController extends Controller
     public function upload(Request $request)
     {
 
-
         $now = Carbon::now();
 
-        $currentDateTime = $now->toDateTimeString(); // Retrieves the date and time in 'Y-m-d H:i:s' format
+
+        $currentDateTime = $dateOnly = $now->toDateString();
+
+
 
         $userID = Auth::id();
         // dd($userID);
         $request->validate([
             'csvFile' => 'required|mimes:csv,txt|max:10000000',
-            'import_conference'=>'required',
-            'import_topic'=>'required',
-        ],
-        [
-            'import_topic.required' => 'Please Select the Topic!',
-            'import_conference.required' => 'Please select the Conference!'
         ]);
-
-
+    
+       
+       
         $file = $request->file('csvFile');
-
         $path = $file->getRealPath();
-
+    
         $csv = Reader::createFromPath($path, 'r');
         $headers = $csv->fetchOne();
 
@@ -54,47 +49,58 @@ class CsvController extends Controller
 
         $csv->setHeaderOffset(0);
 
+        //if upload from file upload and move to public uploads
 
+        // $file = $request->file('csvFile');
 
+        // $filePath = $file->move(public_path('uploads'), $file->getClientOriginalName()); // Move the file to 'public/uploads' directory
+
+        // $csv = Reader::createFromPath($filePath, 'r');
+        // $csv->setHeaderOffset(0); // Set the CSV header row
+
+    
         $update_count = 0;
         $errorCount = 0;
-        $insertcount = 0;
+        $insertcount=0;
 
-
-
+    
+       
 
         foreach ($csv as $row) {
             $email = $row['Email'];
-
+        
             // Check if the record exists based on the email
-            $model = ConferenceDetails::where('email', $email)->first();
-
+            $model = Conference::where('email', $email)->first();
+        
             if ($model) {
                 // If the record exists, update it
                 $model->update([
-                    'name' => $row['Name'],
-                    'phone_number' => $row['Phone Number'],
-                    'country' => $row['Country'],
-                    'user_id' => $userID,
-                    'user_updated_at' => $currentDateTime,
-                    'conference_id'=>$request->import_conference,
-                    'topic_id'=>$request->import_topic,
-                    
+                'name'=>$row['Name'],
+                'email'=>$row['Email'],
+                'article'=>$row['Article'],
+                'conference'=>$row['Conference'],
+                'country'=>$row['Country'],
+                
+                'user_id'=>$request->user()->id,
 
+                'user_updated_at'=>$currentDateTime,
+                // 'updated_at'=>'',
                 ]);
                 $update_count++;
+
             } else {
                 // If the record doesn't exist, create a new one
-                ConferenceDetails::create([
-                    'name' => $row['Name'],
-                    'phone_number' => $row['Phone Number'],
-                    'email' => $row['Email'],
-                    'country' => $row['Country'],
-                    'user_id' => $userID,
-                    'user_created_at' => $currentDateTime,
-                    'conference_id'=>$request->import_conference,
-                    'topic_id'=>$request->import_topic,
-                    // 'updated_at'=>'',
+                Conference::create([
+
+                    'name'=>$row['Name'],
+                    'email'=>$row['Email'],
+                    'article'=>$row['Article'],
+                    'conference'=>$row['Conference'],
+                    'country'=>$row['Country'],
+                    'user_id'=>$request->user()->id,
+
+                    'user_created_at'=>$currentDateTime,
+                // 'updated_at'=>'',
 
                 ]);
                 $insertcount++;
@@ -106,8 +112,8 @@ class CsvController extends Controller
         // if (file_exists($filePath)) {
         //     unlink($filePath);
         // } 
-
-
+        
+    
         return response()->json([
             'inserted_count' => 'Inserted Records Count: '.$insertcount,
             'updated_count'=> 'Updated Records Count: ' . $update_count ,
@@ -115,21 +121,21 @@ class CsvController extends Controller
         ]);
     }
 
-    public function show()
-    {
+   public function show(){
 
-        return view('upload');
-    }
+    return view('upload');
+   }
 
 
     public function progress()
-    {
-        $progress = session('upload_progress', 0);
-        $finished = $progress == 100;
+{
+    $progress = session('upload_progress', 0);
+    $finished = $progress == 100;
 
-        return response()->json([
-            'progress' => $progress,
-            'finished' => $finished,
-        ]);
-    }
+    return response()->json([
+        'progress' => $progress,
+        'finished' => $finished,
+    ]);
+}
+    
 }

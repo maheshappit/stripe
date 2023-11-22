@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Validator;
 
+use App\Models\Conference;
 class ConferenceController extends Controller
 {
     /**
@@ -11,7 +13,12 @@ class ConferenceController extends Controller
      */
     public function index()
     {
-        return view('conferences.index');
+
+        
+
+        $conferences = Conference::distinct()->pluck('conference',)->toArray();
+
+        return view('conferences.create',compact('conferences'));
     }
 
     /**
@@ -27,7 +34,43 @@ class ConferenceController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
+        // dd($request->all());
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|max:255',
+            'article'=>'required',
+            'conference'=>'required',
+            'country'=>'required'
+        ]);  
+
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }else{
+
+
+            Conference::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'article'=>$request->article,
+                'conference'=>$request->conference,
+                
+            ]);
+
+            return response()->json([
+                'message' => 'Conference Details Added Successfully',
+                'status_code'=>'200'
+                
+            ],200);
+
+
+        }
+
+        // Form data is valid, proceed with your logic
+        // For demonstration purposes, we'll just return a success message
+    
+    
     }
 
     /**

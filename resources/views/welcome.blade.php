@@ -495,6 +495,7 @@
 
         .card {
             width: auto !important;
+            top: 80px;
 
         }
 

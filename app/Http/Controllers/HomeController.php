@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ConferenceDetails;
 use App\Models\Conference;
-use App\Models\Topic;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Validator;
@@ -35,47 +33,52 @@ class HomeController extends Controller
 
      public function getClients(Request $request){
 
-        $client_names = ConferenceDetails::where('country', $request->country_name)->distinct()->pluck('client_name')->toArray();
-        $dba_names = ConferenceDetails::distinct()->pluck('database_creator_name',)->toArray();
-        $countries = ConferenceDetails::distinct()->pluck('country',)->toArray();
+        $client_names = Conference::where('country', $request->country_name)->distinct()->pluck('client_name')->toArray();
+        $dba_names = Conference::distinct()->pluck('database_creator_name',)->toArray();
+        $countries = Conference::distinct()->pluck('country',)->toArray();
         return view('home',compact('client_names','countries','dba_names'));
 
     }
 
 
 
-    public function allTopics(Request $request, $id)
+    public function allClients(Request $request, $id)
     {
-
 
 
 
         if ($request->id === 'All') {
             // If 'All' is selected, fetch all client names
-            $topicNames = Topic::all();
+            $conferenceNames = Conference::distinct()->pluck('conference')->toArray();
         } else {
             // Fetch client names based on the selected country ID
-            $topicNames = Topic::where('conference_id', $id)->get()->toArray();
-
+            $conferenceNames = Conference::where('country', $id)->distinct()->pluck('conference')->toArray();
         }
         
 
-        return response()->json(['topicNames' => $topicNames]);
+        $encodedClientNames = array_map('utf8_encode', $conferenceNames);
+        return response()->json(['conferenceNames' => $encodedClientNames]);
             }
 
 
     public function index()
     {
 
-        $conferences=Conference::all();
+        // $users_data=Conference::latest()->paginate(100);
 
-        
-        return view('home',compact(('conferences')));
+        $countries = Conference::distinct()->pluck('conference',)->toArray();
+
+       
+        // dd($email_count);
+
+        // $client_names = Conference::distinct()->pluck('client_name',)->toArray();
+
+        return view('home',compact('countries'));
         
     }
 
     public function edit(Request $request){
-        $user=ConferenceDetails::find($request->id);
+        $user=Conference::find($request->id);
 
         return view('edit',compact('user'));
     }
@@ -83,45 +86,29 @@ class HomeController extends Controller
 
     public function update(Request $request){
 
+        // dd($request->id);
+
         $now = Carbon::now();
 
-        $currentDateTime = $now->toDateTimeString(); 
 
-        $user= ConferenceDetails::find($request->id);
+        $currentDateTime = $now->toDateString();
+
+        $user= Conference::find($request->id);
 
 
         $validator = Validator::make($request->all(), [
-            'create_date' => 'required', 
+            'name' => 'required', 
         ]);
         if($validator->fails()) {
             return redirect()->back()->withErrors($validator);
         }else{
 
             $user->update([
-                'create_date'=>$request->create_date,
-                'email_sent_date'=>$request->email_sent_date,
-                'company_source'=>$request->company_source,
-                'contact_source'=>$request->contact_source,
-                'database_creator_name'=>$request->database_creator_name,
-                'technology'=>$request->technology,
-                'client_speciality'=>$request->client_speciality,
-                'client_name'=>$request->client_name,
-                'street'=>$request->street,
-                'city'=>$request->city,
-                'state'=>$request->state,
-                'zip_code'=>$request->zip_code,
-                'country'=>$request->country,
-                'website'=>$request->website,
-                'first_name'=>$request->first_name,
-                'last_name'=>$request->last_name,
-                'designation'=>$request->designation,
+                'name'=>$request->name,
+                'conference'=>$request->conference,
+                'article'=>$request->article,
                 'email'=>$request->email,
-                'email_response_1'=>$request->email_response_1,
-                'email_response_2'=>$request->email_response_2,
-                'rating'=>$request->rating,
-                'followup'=>$request->followup,
-                'linkedin_link'=>$request->linkedin_link,
-                'employee_count'=>$request->employee_count,
+                'country'=>$request->country,
                 'updated_at'=>$currentDateTime,
     
             ]);
@@ -129,8 +116,6 @@ class HomeController extends Controller
 
         }
 
-
-      
         return redirect()->route('home')->with('success', 'User Updated Successfully.');
 
     }

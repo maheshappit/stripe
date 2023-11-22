@@ -2,11 +2,8 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CsvController;
-use App\Http\Controllers\ConferenceDetailsController;
-use App\Http\Controllers\ConferenceController;
-use App\Http\Controllers\TopicsController;
-
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ConferenceController;
 
 use App\Http\Controllers\Auth\RegisterController;
 
@@ -42,8 +39,11 @@ Route::group(['middleware' => ['isVerified']], function () {
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-Route::get('/user/edit', [App\Http\Controllers\HomeController::class, 'edit'])->name('user.edit');
+Route::get('/edit', [App\Http\Controllers\HomeController::class, 'edit'])->name('user.edit');
 
+Route::get('conferences',[ConferenceController::class,'index'])->name('show.conferences');
+
+Route::post('conferenceDetails/upload',[ConferenceController::class,'store'])->name('conferencedetails.save');
 
 Route::any('/user/update', [App\Http\Controllers\HomeController::class, 'update'])->name('user.update');
 
@@ -57,21 +57,14 @@ Route::post('/download-report', [App\Http\Controllers\UserController::class, 'do
 Route::post('/download-emails', [App\Http\Controllers\UserController::class, 'downloadEmails'])->name('download.email');
 
 // Route::view('/upload', 'upload-form'); // Display the form
-Route::post('upload',[CsvController::class,'upload'])->name('upload');
-Route::get('upload',[CsvController::class,'upload'])->name('user');
-Route::post('conferenceDetails/upload',[ConferenceDetailsController::class,'store'])->name('conferencedetails.save');
-
-
-
-Route::get('conferences',[ConferenceController::class,'index'])->name('show.conferences');
-
-
-
+Route::any('upload',[CsvController::class,'upload'])->name('upload');
 
 Route::any('show-upload-form',[CsvController::class,'show'])->name('show.upload');
+
+
 Route::get('/upload-csv-progress', [CsvController::class,'progress'])->name('progress');
-Route::any('/all-clients/{id}', [App\Http\Controllers\HomeController::class,'allClients'])->name('all-clients');
-Route::any('/all-topics/{id}', [App\Http\Controllers\HomeController::class,'allTopics'])->name('all-topics');
+
+Route::any('/all-conferences/{id}', [App\Http\Controllers\HomeController::class,'allClients'])->name('all-conferences');
 
 
 // Auth::routes();

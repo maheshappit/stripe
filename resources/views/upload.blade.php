@@ -11,7 +11,14 @@
 
     <a href="{{ asset('Samples/Sample.csv') }}" download>Sample Headers File Download</a>
 
-    <div id="message" style="color: red"></div>
+    <div id="message" style="color: green"></div>
+    <div id="error-message" style="color: red"></div>
+
+    <div id="inserted_count" style="color: green"></div>
+    <div id="updated_count" style="color: blue"></div>
+    <div id="erros_count" style="color: red"></div>
+
+
 </div>
 
 <script>
@@ -23,29 +30,60 @@
 
 
         $.ajax({
-            xhr: function() {
+            xhr: function(res) {
                 var xhr = new window.XMLHttpRequest();
 
-                if(xhr.status==0){
-                    $('#message').text('Data Uploading please wait..').show();
 
-                }
-                else if(xhr.status === 200){
 
-                    $('#message').text('Data Uploaded Successfully').show();
 
+                if (xhr.status === 0) {
+
+                    
+                    $('#message')
+                        .text('Data Uploading, please wait...')
+                        .css({
+                            'font-size': '16px',
+                            'color': 'green',
+                            'font-weight': 'bold'
+                            // Add any other styles you want to apply
+                        })
+                        .show();
+                } else if (xhr.status === 200) {
+                    $('#message').remove();
+
+                    $('#error-message').remove();
+
+
+
+                    $('#message')
+                        .text('Data uploaded success')
+                        .css({
+                            'font-size': '16px',
+                            'color': 'green',
+                            'font-weight': 'bold'
+                            // Add any other styles you want to apply
+                        })
+                        .show();
 
                 }
                 return xhr;
             },
-            
+
             url: '{{ route('upload') }}', // Using Laravel's route helper
             type: 'POST',
             data: formData,
             processData: false,
             contentType: false,
             success: function(response) {
+                $('#error-message').remove();
+
                 $('#message').text(response.message).show();
+                $('#inserted_count').text(response.inserted_count).show();
+                $('#updated_count').text(response.updated_count).show();
+
+
+
+
                 document.getElementById('uploadButton').disabled = false;
 
             },
@@ -58,7 +96,11 @@
                         errorMessage += errorResponse.errors[key][0] + '<br>';
                     });
                 }
-                $('#message').html(errorMessage).show();
+                $('#message').remove();
+
+                $('#error-message').html(errorMessage).show();
+                document.getElementById('uploadButton').disabled = false;
+
             }
         });
     });

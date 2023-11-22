@@ -48,6 +48,7 @@
             $('.field-error').text('');
 
             var f_date=$('#from_date').val();
+
             var t_date=$('#to_date').val();
 
 
@@ -61,6 +62,8 @@
 // Example usage
 const from_date = formatDate(f_date);
 const to_date = formatDate(t_date);
+
+console.log(from_date);
 
 
 

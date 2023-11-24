@@ -38,16 +38,7 @@
         })
     </script>
 
-<script>
-                    $(document).ready(function() {
-                        $('.country').select2();
-                        $('.conference').select2();
-                        $('.db').select2();
-                        $('.technology').select2();
-                        $('.speciality').select2();
 
-                    });
-                </script>
 
     <script>
         $(document).ready(function() {
@@ -90,11 +81,12 @@
                         d.search = $('#search').val();
                         d.conference = $('#conference').val();
                         d.country = $('#country').val();
-                        d.technology = $('#technology').val();
-                        d.speciality = $('#speciality').val();
-                        d.designation = $('#designation').val();
-                        d.emp_count = $('#emp_count').val();
+                       d.article=$('#article').val();
+                       d.user=$('#user').val();
+                       d.user_create_at=$('#user_created_at').val();
+                       d.user_updated_at=$('#user_updated_at').val();
 
+                       
 
 
                         var conference_id = $('#conference').val();
@@ -144,6 +136,11 @@
                         data:'conference'
 
                     },
+                    {
+                        title:'Posted By',
+                        data:'posted_by'
+                        
+                    },
                     
 
                    
@@ -163,7 +160,7 @@
                         mData: '',
                         render: (data, type, row) => {
                             return `
-            <a class="btn btn-primary" href='/conferences/edit/?id=${row.id}'>Edit</a>
+            <a class="btn btn-primary" href='{{ route('user.edit') }}/?id=${row.id}'>Edit</a>
         `;
                         }
                     }
@@ -491,7 +488,7 @@
         </div>
         <div class="menu">
             <div class="logo">
-                BD
+                STRIPE
             </div>
             <div class="right_menu">
                 <ul>
@@ -542,13 +539,22 @@
 
                 <li>
                         <a href="{{ route('home') }}" class="{{ ((Request::is('home')) ? 'active' : ' ') }}">
-
-
                             <span class="icon"><i class="fas fa-dice-d6"></i></span>
-                            <span class="title">Dashboard</span>
+                            <span class="title">Home</span>
                         </a>
 
+                </li>
+
+                <li>
+                        <a href="{{route('show.upload')}}" class="{{ ((Request::is('show-upload-form')) ? 'active' : ' ') }}">
+                            <span class="icon"><i class="fab fa-delicious"></i></span>
+                            <span class="title">Upload</span>
+                        </a>
                     </li>
+
+
+
+              
                     <li>
                         <a href="{{ route('show.conferences') }}" class="{{ ((Request::is('show.conferences')) ? 'active' : ' ') }}">
 
@@ -558,13 +564,7 @@
                         </a>
 
                     </li>
-                    <li>
-                        <a href="{{route('show.upload')}}" class="{{ ((Request::is('show-upload-form')) ? 'active' : ' ') }}">
-                            <span class="icon"><i class="fab fa-delicious"></i></span>
-                            <span class="title">Upload</span>
-                        </a>
-                    </li>
-
+                 
                     <li>
                         <a href="{{route('show.report')}}" class="{{ ((Request::is('show-report')) ? 'active' : ' ') }}">
                             <span class="icon"><i class="fas fa-chart-pie"></i></span>

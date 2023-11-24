@@ -52,7 +52,7 @@
             <div class="container">
               
             <a href="{{route('home')}}">
-            <img  src="{{ asset('storage/images/logo.png') }}" class="image-class" alt="Image">
+            <img  src="{{ asset('storage/images/logo.jpg') }}" class="image-class" alt="Image">
 
 
             </a>

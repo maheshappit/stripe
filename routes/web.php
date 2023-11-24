@@ -39,9 +39,12 @@ Route::group(['middleware' => ['isVerified']], function () {
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-Route::get('/edit', [App\Http\Controllers\HomeController::class, 'edit'])->name('user.edit');
+Route::get('edit', [App\Http\Controllers\HomeController::class, 'edit'])->name('user.edit');
 
 Route::get('conferences',[ConferenceController::class,'index'])->name('show.conferences');
+
+
+
 
 Route::post('conferenceDetails/upload',[ConferenceController::class,'store'])->name('conferencedetails.save');
 
@@ -65,6 +68,9 @@ Route::any('show-upload-form',[CsvController::class,'show'])->name('show.upload'
 Route::get('/upload-csv-progress', [CsvController::class,'progress'])->name('progress');
 
 Route::any('/all-conferences/{id}', [App\Http\Controllers\HomeController::class,'allClients'])->name('all-conferences');
+
+
+Route::any('/all-articles/{id}', [App\Http\Controllers\HomeController::class,'allTopics'])->name('all-articles');
 
 
 // Auth::routes();

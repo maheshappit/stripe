@@ -34,7 +34,7 @@
                         <input type="email" class="form-control" name="email" placeholder="Enter Email">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Email address</label>
+                        <label class="form-label">Password</label>
                         <input type="password" class="form-control" name="password" placeholder="Enter Password">
                     </div>
                     <input type="submit" class="btn btn-primary" value="Admin Login">

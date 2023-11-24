@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Conference;
+use App\Models\ConferencesData;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use app\Models\User;
 
 
 use Illuminate\Support\Carbon;
@@ -45,8 +47,6 @@ class HomeController extends Controller
     public function allClients(Request $request, $id)
     {
 
-
-
         if ($request->id === 'All') {
             // If 'All' is selected, fetch all client names
             $conferenceNames = Conference::distinct()->pluck('conference')->toArray();
@@ -61,19 +61,33 @@ class HomeController extends Controller
             }
 
 
+            public function allTopics(Request $request, $id)
+        {
+
+        if ($request->id === 'All') {
+            // If 'All' is selected, fetch all client names
+            $topicNames = Conference::distinct()->pluck('article')->toArray();
+        } else {
+            // Fetch client names based on the selected country ID
+            $topicNames = Conference::where('conference', $id)->distinct()->pluck('article')->toArray();
+        }
+        
+        $encodedClientNames = array_map('utf8_encode', $topicNames);
+        return response()->json(['topicNames' => $encodedClientNames]);
+            }
+
+
+            
+
+
     public function index()
     {
 
-        // $users_data=Conference::latest()->paginate(100);
+        $conferences = ConferencesData::all();
 
-        $countries = Conference::distinct()->pluck('conference',)->toArray();
-
-       
-        // dd($email_count);
-
-        // $client_names = Conference::distinct()->pluck('client_name',)->toArray();
-
-        return view('home',compact('countries'));
+        $countries = Conference::distinct()->pluck('country',)->toArray();
+        $users = User::all();
+        return view('home',compact('countries','users','conferences'));
         
     }
 

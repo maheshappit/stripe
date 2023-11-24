@@ -1,100 +1,227 @@
 @extends('layouts.dashboard')
-
 @section('dashboard-content')
 
+<head>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+
+
+    <script>
+        function openModal(modalId) {
+            var modal = document.getElementById(modalId);
+            modal.style.display = 'flex';
+        }
+
+        function closeModal(modalId) {
+            var modal = document.getElementById(modalId);
+            modal.style.display = 'none';
+        }
+    </script>
+
+<script>
+        $(document).ready(function() {
+
+            $('#myForm').submit(function(e) {
+                e.preventDefault();
+
+                var formData = $(this).serialize();
+
+                $.ajax({
+                    type: 'POST',
+                    url: '{{ route('conferencedetails.save') }}',
+
+                    data: formData,
+                    success: function(response) {
+
+                        console.log(formData);
+
+                        if (response.status_code == '200') {
+                            toastr.success(response.message);
+                            $('#name').val('');
+                            $('#email').val('');
+                            $('#article').val('');
+                            $('#email').val('');
+                            $('#country').val('');
+
+                            
+
+                        }
+                    },
+                    error: function(xhr, status, error) {
+
+                        var errors = xhr.responseJSON.errors;
+                        handleValidationErrors(errors);
+                    },
+                });
+            });
+
+            function handleValidationErrors(errors) {
+                // Display validation errors as toasts
+                for (var field in errors) {
+                    if (errors.hasOwnProperty(field)) {
+                        toastr.error(errors[field][0]);
+                    }
+                }
+            }
+        });
+    </script>
+    <style>
+
+        
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 37px;
+    font-size: 20px;
+    cursor: pointer;
+    color: #333; /* Change the color to your preference */
+}
+
+.close-button:hover {
+    color: #555; /* Change the hover color to your preference */
+}
+        .button-container {
+            text-align: center;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            outline: none;
+            border: none;
+            border-radius: 5px;
+            background-color: #007BFF;
+            /* Blue color, you can change this */
+            color: #fff;
+            /* Text color, you can change this */
+            margin: 5px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+            width: 600px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .form-container {
+            text-align: left;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+
+        .form-group button {
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
 <div class="item">
-    <div class="input-group mb-3">
-        <input type="text" name="search" id="search" class="form-control" placeholder="Search Data Here..." aria-label="Recipient's username" aria-describedby="basic-addon2">
-        <div class="input-group-append">
-            <button class="btn btn-success" id="searchButton" type="button">Search</button>
-            <button class="btn btn-warning" id="MainClearBtn" type="button">Clear</button>
-        </div>
+    <h4>hello ,{{ Auth::user()->name }}</h4>
+    <div class="button-container">
+        <button class="btn-sm btn-primary" onclick="openModal('modal1')">Create new Conference</button>
+        <button class="btn-sm btn-success" onclick="openModal('modal2')">import</button>
     </div>
 
 </div>
 
+<div id="modal1" class="modal">
+    <div class="modal-content">
+        <div class="modal-title">Create New Conference</div>
+        <div class="close-button" onclick="closeModal('modal1')">✕</div>
 
+        <div class="form-container">
+            <form id="myForm">
+                @csrf
 
+                <div>
+                    <label for="conference">Conference:</label>
+                    <select class="custom-select" id="conference" name="conference">
+                        @foreach($conferences as $code )
+                        <option value="{{ $code->name}}">{{ $code->name}}</option>
+                        @endforeach
+                    </select>
+                </div>
 
+                <div class="form-group">
+                    <label for="article">Article:</label>
+                    <input type="text" id="article" name="article">
+                </div>
 
-<div class="item">
+                <div class="form-group">
+                    <label for="name"> Client Name:</label>
+                    <input type="text" id="name" name="name" >
+                </div>
 
-    <h6>Conferences Data</h6>
-    <form id="form">
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" >
+                </div>
 
-        <div class="form-row">
+                <div class="form-group">
+                    <label for="country">Country:</label>
+                    <input type="text" id="country" name="country" >
+                </div>
 
-            <div>
-                <label for="country"> Country:</label>
-                <select id="country" name="country" class="country">
-                    <option value="All">All</option>
-                    @foreach($countries as $code => $name)
-                    <option value="{{ $name }}">{{ $name }}</option>
-                    @endforeach
-                </select>
-
-            </div>
-
-            <div>
-                <label for="conference">Conferences:</label>
-                <select id="conference" name="conference" class="conference" style="width:auto">
-
-                    <option value="All">All conference Names</option>
-
-
-                </select>
-
-
-            </div>
-
-            <div>
-
-            <button id="search-btn" class="btn-sm btn-primary">Search</button>
-
-</div>
-
-
-
-
-         
-
+                <button class="btn btn-success" type="submit">Submit</button>
+            </form>
         </div>
 
-
-
-
-
-
-       
-
-       
-
-
-
-
-
-
-
-
-        
-
-
-        <!-- <button class="btn btn-warning" onclick="resetSelect()" type="button">Reset</button> -->
-
-
-
-    </form>
-
+        <!-- Close "x" mark -->
+    </div>
 </div>
 
-<div class="item">
-    <table id="dtHorizontalExample" class="table">
-       
-    </table>
 
-
+<!-- Modal 2 -->
+<div id="modal2" class="modal">
+    <div class="modal-content">
+        <div class="modal-title">Modal 2 Title</div>
+        <p>This is Modal 2 content.</p>
+        <button onclick="closeModal('modal2')">Close</button>
+    </div>
 </div>
-
 
 
 @endsection

@@ -27,7 +27,7 @@ class CsvController extends Controller
         $now = Carbon::now();
 
 
-        $currentDateTime = $dateOnly = $now->toDateString();
+        $currentDateTime = $now->toDateString();
 
 
 
@@ -68,9 +68,11 @@ class CsvController extends Controller
 
         foreach ($csv as $row) {
             $email = $row['Email'];
+            $conference = $row['Conference'];
+
         
             // Check if the record exists based on the email
-            $model = Conference::where('email', $email)->first();
+            $model = Conference::where('email', $email)->where('conference',$conference)->first();
         
             if ($model) {
                 // If the record exists, update it

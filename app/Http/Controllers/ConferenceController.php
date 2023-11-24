@@ -5,7 +5,14 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Validator;
 
+
 use App\Models\Conference;
+use App\Models\User;
+
+use App\Models\ConferencesData;
+use Illuminate\Support\Carbon;
+
+
 class ConferenceController extends Controller
 {
     /**
@@ -16,9 +23,11 @@ class ConferenceController extends Controller
 
         
 
-        $conferences = Conference::distinct()->pluck('conference',)->toArray();
+        $conferences = ConferencesData::all();
+        $countries = Conference::distinct()->pluck('country',)->toArray();
+        $users = User::all();
 
-        return view('conferences.create',compact('conferences'));
+        return view('conferences.index',compact('conferences','countries','users'));
     }
 
     /**
@@ -35,14 +44,23 @@ class ConferenceController extends Controller
     public function store(Request $request)
     {
 
+        $now = Carbon::now();
+
+
+        $currentDateTime = $now->toDateString();
+
+
         // dd($request->all());
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|max:255',
-            'article'=>'required',
+            'name' => 'required|alpha|max:255',
+            'email' => 'required|email|max:255',
+            'article'=>'required|string|max:255',
             'conference'=>'required',
-            'country'=>'required'
-        ]);  
+            'country'=>'required|alpha|max:255'
+        ],
+    [
+        'name.required'=>'The Client Name  is required.',
+    ]);  
 
 
         if ($validator->fails()) {
@@ -55,7 +73,9 @@ class ConferenceController extends Controller
                 'email' => $request->email,
                 'article'=>$request->article,
                 'conference'=>$request->conference,
-                
+                'country'=>$request->country,
+                'user_id'=>$request->user()->id,
+                'user_created_at'=>$currentDateTime,                
             ]);
 
             return response()->json([

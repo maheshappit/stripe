@@ -364,29 +364,10 @@
 
 
 
-                    <label for="client">Clent Name:</label>
-                    <select id="client" name="client_name" class="client">
-
-                    <option value="">All</option>
-
-                        @foreach($client_names as $code => $name)
-                        <option value="{{ $name }}">{{ $name }}</option>
-                        @endforeach
-
-                    </select>
+                   
 
 
-                    <label for="db">DB Creator Name:</label>
-                    <select id="db" name="database_creator_name" class="db">
-
-                    <option value ="">All</option>
-
-                        @foreach($dba_names as $code => $name)
-                        <option  value="{{ $name }}">{{ $name }}</option>
-                        @endforeach
-
-                    </select>
-
+                    
 
                     <button id="search-btn" class="btn btn-primary">Search</button>
                 </form>

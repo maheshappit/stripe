@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
-use App\Models\BdModel;
+use App\Models\Conference;
 // use Validator;
 use League\Csv\Reader;
 use App\Models\User;
@@ -46,15 +46,13 @@ class AdminController extends Controller
 
     public function dashboard()
     {
-        $users_data=BdModel::latest()->paginate(10);
+        $users_data=Conference::latest()->paginate(10);
 
 
-        $dba_names = BdModel::distinct()->pluck('database_creator_name',)->toArray();
 
-        $countries = BdModel::distinct()->pluck('country',)->toArray();
-        $client_names = BdModel::distinct()->pluck('client_name',)->toArray();
+        $countries = Conference::distinct()->pluck('country',)->toArray();
 
-        return view('admin.dashboard',compact('countries','client_names','dba_names'));
+        return view('admin.dashboard',compact('countries'));
         
     }
 
@@ -100,7 +98,7 @@ class AdminController extends Controller
     public function update(Request $request){
 
 
-        $user= BdModel::find($request->id);
+        $user= Conference::find($request->id);
         $user->update([
             'create_date'=>$request->create_date,
             'email_sent_date'=>$request->email_sent_date,
@@ -137,7 +135,7 @@ class AdminController extends Controller
         // dd($request);
 
 
-        $user=BdModel::find($request->id);
+        $user=Conference::find($request->id);
         $user->delete();
         return redirect()->route('admin.dashboard')->with('success', 'User Deleted Successfully.');
 
@@ -170,7 +168,7 @@ class AdminController extends Controller
             $email = $row['Email']; // Assuming the email column in the CSV is named 'email'
 
         // Try to find a record with the same email in the database
-        $existingRecord = BdModel::where('email', $email)->first();
+        $existingRecord = Conference::where('email', $email)->first();
 
         if ($existingRecord) {
             // If a record with the same email exists, update it
@@ -202,7 +200,7 @@ class AdminController extends Controller
             ]);
         } else {
             // If no record with the same email exists, insert a new record
-            BdModel::create([
+            Conference::create([
                 'create_date'=>$row['Create Date'],
                 'email_sent_date'=>$row['Email sent Date'],
                 'company_source'=>$row['Company Source'],
@@ -246,7 +244,7 @@ class AdminController extends Controller
         return redirect()->route('admin.login')->with('message', 'User Deleted Successfully.');
     }
     public function edit(Request $request){
-        $user=BdModel::find($request->id);
+        $user=Conference::find($request->id);
 
         return view('admin.edit',compact('user'));
 

@@ -141,21 +141,20 @@
                         data:'posted_by'
                         
                     },
+                    {
+                        title:'Created Date',
+                        data:'user_created_at'
+
+                    },
+                    {
+                        title:'Updated Date',
+                        data:'user_updated_at'
+                    },
                     
 
                    
                     
-                   
-                    
-                   
-                   
-
-                    
-
-                   
-                    
-
-
+            
                     {
                         mData: '',
                         render: (data, type, row) => {
@@ -545,15 +544,7 @@
 
                 </li>
 
-                <li>
-                        <a href="{{route('show.upload')}}" class="{{ ((Request::is('show-upload-form')) ? 'active' : ' ') }}">
-                            <span class="icon"><i class="fab fa-delicious"></i></span>
-                            <span class="title">Upload</span>
-                        </a>
-                    </li>
-
-
-
+             
               
                     <li>
                         <a href="{{ route('show.conferences') }}" class="{{ ((Request::is('show.conferences')) ? 'active' : ' ') }}">
@@ -563,6 +554,13 @@
                             <span class="title">Conferences</span>
                         </a>
 
+                    </li>
+
+                    <li>
+                        <a href="{{route('show.upload')}}" class="{{ ((Request::is('show-upload-form')) ? 'active' : ' ') }}">
+                            <span class="icon"><i class="fab fa-delicious"></i></span>
+                            <span class="title">Upload</span>
+                        </a>
                     </li>
                  
                     <li>

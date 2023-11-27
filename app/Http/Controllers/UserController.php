@@ -32,39 +32,41 @@ class UserController extends Controller
 
         if ($request->search) {
             $query
-                ->orwhere('country', 'like', '%' . $request->search . '%')->orderBy('country', 'asc')
-                ->orwhere('email', 'like', '%' . $request->search . '%')->orderBy('email', 'asc');
+                ->orwhere('country', 'like', '%' . $request->search . '%')->orderBy('created_at', 'desc')
+                ->orwhere('email', 'like', '%' . $request->search . '%')->orderBy('created_at', 'desc')
+                ->orwhere('name', 'like', '%' . $request->search . '%')->orderBy('created_at', 'desc');
+
         } else {
-            $query->whereNotNull('country');
+            $query->whereNotNull('country')->orderBy('created_at', 'desc');
         }
 
         if ($request->country == 'All') {
 
-            $query->whereNotNull('country');
+            $query->whereNotNull('country')->orderBy('created_at', 'desc');
         } else {
-            $query->where('country', 'like', '%' . $request->country . '%');
+            $query->where('country', 'like', '%' . $request->country . '%')->orderBy('created_at', 'desc');
         }
 
         if ($request->conference == 'All') {
 
-            $query->whereNotNull('conference');
+            $query->whereNotNull('conference')->orderBy('created_at', 'desc');
         } else {
-            $query->where('conference', 'like', '%' . $request->conference . '%');
+            $query->where('conference', 'like', '%' . $request->conference . '%')->orderBy('created_at', 'desc');
         }
 
         if ($request->article == 'All') {
 
-            $query->whereNotNull('article');
+            $query->whereNotNull('article')->orderBy('created_at', 'desc');
         } else {
-            $query->where('article', 'like', '%' . $request->article . '%');
+            $query->where('article', 'like', '%' . $request->article . '%')->orderBy('created_at', 'desc');
         }
 
 
         if ($request->user == 'All') {
 
-            $query->whereNotNull('email');
+            $query->whereNotNull('email')->orderBy('created_at', 'desc');
         } else {
-            $query->where('user_id', 'like', '%' . $request->user . '%');
+            $query->where('user_id', 'like', '%' . $request->user . '%')->orderBy('created_at', 'desc');
         }
 
 
@@ -75,19 +77,19 @@ class UserController extends Controller
         //for all country,conference,articles,users,created,updated dates
         if ($request->country == 'All' && $request->conference == 'All' && $request->article == 'All' && $request->user == 'All' && $request->user_created_at  == '' && $request->user_updated_at == '') {
 
-            $query->whereNotNull('country')->whereNotNull('conference')->whereNotNull('article')->whereNotNull('user_id');
+            $query->whereNotNull('country')->whereNotNull('conference')->whereNotNull('article')->whereNotNull('user_id')->orderBy('created_at', 'desc');
         }
 
         //particular country and all-->conferences,articles,users,created,updated dates
         if ($request->country != 'All' && $request->conference == 'All' && $request->article == 'All' && $request->user == 'All' && $request->user_created_at  == '' && $request->user_updated_at == '') {
-            $query->where('country',$request->country)->whereNotNull('conference')->whereNotNull('article')->whereNotNull('user_id');
+            $query->where('country',$request->country)->whereNotNull('conference')->whereNotNull('article')->whereNotNull('user_id')->orderBy('created_at', 'desc');
         }
 
          //particular country,conference and all-->conferences,articles,users,created,updated dates
 
         if ($request->country != 'All' && $request->conference != 'All' && $request->article == 'All' && $request->user == 'All' && $request->user_created_at  == '' && $request->user_updated_at == '') {
             // dd($request);
-            $query->where('country',$request->country)->where('conference',$request->conference)->whereNotNull('article')->whereNotNull('user_id');
+            $query->where('country',$request->country)->where('conference',$request->conference)->whereNotNull('article')->whereNotNull('user_id')->orderBy('created_at', 'desc');
         }
 
 
@@ -95,14 +97,14 @@ class UserController extends Controller
         //particular country,conference,article, all users,all dates
         if ($request->country != 'All' && $request->conference != 'All' && $request->article == '!All' && $request->user == 'All' && $request->user_created_at  == '' && $request->user_updated_at == '') {
             // dd($request);
-            $query->where('country',$request->country)->where('conference',$request->conference)->where('article',$request->article)->whereNotNull('user_id');
+            $query->where('country',$request->country)->where('conference',$request->conference)->where('article',$request->article)->whereNotNull('user_id')->orderBy('created_at', 'desc');
         }
 
 
         //particular country,conference,article, users,all dates
         if ($request->country != 'All' && $request->conference != 'All' && $request->article == '!All' && $request->user != 'All' && $request->user_created_at  == '' && $request->user_updated_at == '') {
             // dd($request);
-            $query->where('country',$request->country)->where('conference',$request->conference)->whereNotNull('article')->where('user_id',$request->user_id);
+            $query->where('country',$request->country)->where('conference',$request->conference)->whereNotNull('article')->where('user_id',$request->user_id)->orderBy('created_at', 'desc');
         }
 
 
@@ -110,13 +112,13 @@ class UserController extends Controller
 
         if ($request->country != 'All' && $request->conference != 'All' && $request->article == '!All' && $request->user != 'All' && $request->user_created_at  != '' && $request->user_updated_at == '') {
             // dd($request);
-            $query->where('country',$request->country)->where('conference',$request->conference)->whereNotNull('article')->whereNotNull('user_id')->where('user_created_at',$request->user_created_at);
+            $query->where('country',$request->country)->where('conference',$request->conference)->whereNotNull('article')->whereNotNull('user_id')->where('user_created_at',$request->user_created_at)->orderBy('created_at', 'desc');
         }
 
 
         if ($request->country != 'All' && $request->conference != 'All' && $request->article == '!All' && $request->user != 'All' && $request->user_created_at  == '' && $request->user_updated_at != '') {
             // dd($request);
-            $query->where('country',$request->country)->where('conference',$request->conference)->whereNotNull('article')->whereNotNull('user_id')->where('user_updated_at',$request->user_created_at);
+            $query->where('country',$request->country)->where('conference',$request->conference)->whereNotNull('article')->whereNotNull('user_id')->where('user_updated_at',$request->user_created_at)->orderBy('created_at', 'desc');
         }
 
 
@@ -124,14 +126,14 @@ class UserController extends Controller
 
         if ($request->country != 'All' && $request->conference != 'All' && $request->article == '!All' && $request->user != 'All' && $request->user_created_at  != '' && $request->user_updated_at != '') {
             // dd($request);
-            $query->where('country',$request->country)->where('conference',$request->conference)->whereNotNull('article')->whereNotNull('user_id')->where('user_created_at',$request->user_created_at)->where('user_updated_at',$request->user_updated_at);
+            $query->where('country',$request->country)->where('conference',$request->conference)->whereNotNull('article')->whereNotNull('user_id')->where('user_created_at',$request->user_created_at)->where('user_updated_at',$request->user_updated_at)->orderBy('created_at', 'desc');
         }
 
 
         //country,conference,article,user,created,updated
         if ($request->country == 'All' && $request->conference != 'All' && $request->article == '!All' && $request->user != 'All' && $request->user_created_at  != '' && $request->user_updated_at != '' && $request->user_created_at) {
             // dd($request);
-            $query->whereNotNull('country')->where('conference',$request->conference)->where('article',$request->article)->where('user_id',$request->user_id)->where('user_created_at',$request->user_created_at)->where('user_updated_at',$request->user_updated_at);
+            $query->whereNotNull('country')->where('conference',$request->conference)->where('article',$request->article)->where('user_id',$request->user_id)->where('user_created_at',$request->user_created_at)->where('user_updated_at',$request->user_updated_at)->orderBy('created_at', 'desc');
         }
 
 

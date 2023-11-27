@@ -8,6 +8,11 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+use Illuminate\Validation\Rule;
+use App\Rules\UniqueConferenceEmailArticle;
+
+
+
 class Conference extends Model
 {
     use HasFactory;
@@ -24,6 +29,16 @@ class Conference extends Model
         'user_created_at',
         'user_updated_at',
     ];
+
+    public static function rules($id = null)
+    {
+        return [
+            'conference' => 'required|string|max:255',
+            'email' => ['required', 'email', 'max:255', new UniqueConferenceEmailArticle($id)],
+            'article' => 'required|string|max:255',
+            // Add other validation rules as needed
+        ];
+    }
 
     public function postedby()
     {

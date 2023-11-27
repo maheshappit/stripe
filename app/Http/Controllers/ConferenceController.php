@@ -45,11 +45,7 @@ class ConferenceController extends Controller
     {
 
         $now = Carbon::now();
-
-
         $currentDateTime = $now->toDateString();
-
-
         // dd($request->all());
         $validator = Validator::make($request->all(), [
             'name' => 'required|alpha|max:255',
@@ -63,34 +59,42 @@ class ConferenceController extends Controller
     ]);  
 
 
+            $existingRecord = Conference::where('conference', $request->conference)
+            ->where('article', $request->article)
+            ->where('email', $request->email)
+            ->first();
+
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }else{
 
+            if ($existingRecord) {
+                return response()->json(['errors' => [['Record Already Exists']]], 422);
+            }else{
 
-            Conference::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'article'=>$request->article,
-                'conference'=>$request->conference,
-                'country'=>$request->country,
-                'user_id'=>$request->user()->id,
-                'user_created_at'=>$currentDateTime,                
-            ]);
-
-            return response()->json([
-                'message' => 'Conference Details Added Successfully',
-                'status_code'=>'200'
+                Conference::create([
+                    'name' => $request->name,
+                    'email' => $request->email,
+                    'article'=>$request->article,
+                    'conference'=>$request->conference,
+                    'country'=>$request->country,
+                    'user_id'=>$request->user()->id,
+                    'user_created_at'=>$currentDateTime,                
+                ]);
+    
+                return response()->json([
+                    'message' => 'Conference Details Added Successfully',
+                    'status_code'=>'200'
+                    
+                ],200);
                 
-            ],200);
+            }
 
 
         }
 
-        // Form data is valid, proceed with your logic
-        // For demonstration purposes, we'll just return a success message
-    
-    
+     
+
     }
 
     /**

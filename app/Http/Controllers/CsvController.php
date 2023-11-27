@@ -69,18 +69,19 @@ class CsvController extends Controller
         foreach ($csv as $row) {
             $email = $row['Email'];
             $conference = $row['Conference'];
+            $article=$row['Article'];
 
         
             // Check if the record exists based on the email
-            $model = Conference::where('email', $email)->where('conference',$conference)->first();
+            $model = Conference::where('email', $email)->where('conference',$conference)->where('article',$article)->first();
         
             if ($model) {
                 // If the record exists, update it
                 $model->update([
                 'name'=>$row['Name'],
-                'email'=>$row['Email'],
-                'article'=>$row['Article'],
-                'conference'=>$row['Conference'],
+                // 'email'=>$row['Email'],
+                // 'article'=>$row['Article'],
+                // 'conference'=>$row['Conference'],
                 'country'=>$row['Country'],
                 
                 'user_id'=>$request->user()->id,
@@ -92,6 +93,7 @@ class CsvController extends Controller
 
             } else {
                 // If the record doesn't exist, create a new one
+
                 Conference::create([
 
                     'name'=>$row['Name'],

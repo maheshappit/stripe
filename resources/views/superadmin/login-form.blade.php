@@ -1,14 +1,14 @@
-@extends('layouts.adminapp')
+@extends('layouts.app')
 
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header">{{ __('Admin Login') }}</div>
+                <div class="card-header">{{ __('Super Admin Login') }}</div>
 
                 <div class="card-body">
-                <form action="{{ route('admin.loginWithOTP') }}" id="loginform" method="post">
+                <form action="{{ route('superadmin.loginWithOTP') }}" id="loginform" method="post">
                         @csrf
 
                         <div class="row mb-3">

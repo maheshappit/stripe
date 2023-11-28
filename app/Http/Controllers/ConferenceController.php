@@ -48,11 +48,11 @@ class ConferenceController extends Controller
         $currentDateTime = $now->toDateString();
         // dd($request->all());
         $validator = Validator::make($request->all(), [
-            'name' => 'required|alpha|max:255',
+            'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'article'=>'required|string|max:255',
             'conference'=>'required',
-            'country'=>'required|alpha|max:255'
+            'country'=>'required|string|max:255'
         ],
     [
         'name.required'=>'The Client Name  is required.',

@@ -17,24 +17,16 @@ class UserController extends Controller
 
 
 
-
-    
-
-
     public function index(Request $request)
     {
-
-
 
 
 
         $query = Conference::query();
 
         if ($request->search) {
-            $query
-                ->orwhere('country', 'like', '%' . $request->search . '%')->orderBy('created_at', 'desc')
-                ->orwhere('email', 'like', '%' . $request->search . '%')->orderBy('created_at', 'desc')
-                ->orwhere('name', 'like', '%' . $request->search . '%')->orderBy('created_at', 'desc');
+            $query->where('country', 'like', '%' . $request->search . '%');
+                
 
         } else {
             $query->whereNotNull('country')->orderBy('created_at', 'desc');

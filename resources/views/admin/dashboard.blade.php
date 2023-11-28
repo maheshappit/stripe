@@ -285,6 +285,7 @@
 
 
             $('#datatable').on('click', '.show-more', function() {
+                alert();
                 var $row = $(this).closest('tr');
                 var $moreText = $row.find('.more-text');
                 var $ellipsis = $row.find('.ellipsis');

@@ -20,9 +20,7 @@ use App\Mail\LoginOTP;
 use Mail;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
-
-
-
+use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
@@ -175,9 +173,9 @@ class LoginController extends Controller
         } */
 
         if(auth()->check()) {
-            // if(auth()->user()->is_superadmin) {
-            //     return redirect(route('superadmin.dashboard.index'));
-            // }
+            if(auth()->user()->is_superadmin) {
+                return redirect(route('superadmin.dashboard.index'));
+            }
             return redirect('home');
         }
 
@@ -222,11 +220,12 @@ class LoginController extends Controller
 
     protected function redirectTo()
     {
-        $user = auth()->user();
-        if($user->is_superadmin) {
-            return 'super-admin/dashboard';
+
+
+        if(Auth::user()->isAdmin()) {
+            return 'admin/dashboard';
         }
-        return '/home';
+        return '/login';
     }
 
     public function logout(Request $request)
@@ -235,9 +234,6 @@ class LoginController extends Controller
         $this->guard()->logout();
 
         $request->session()->invalidate();
-
-        
-
         return redirect(route('login'));
     }
 

@@ -6,6 +6,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use App\Models\Conference;
+use App\Http\Requests\UserFrontLoginVerifyOTPFormRequest;
+use App\Http\Requests\UserFrontLoginWithOTPFormRequest;
+use App\Models\admin_verification_codes;
+use Carbon\Carbon;
+use App\Mail\LoginOTP;
+use App\Models\Admin;
+use Mail;
+
+
 // use Validator;
 use League\Csv\Reader;
 use App\Models\User;
@@ -36,6 +45,9 @@ class AdminController extends Controller
             'password'=>'required',
         ]);
 
+        if (Auth::guard('superadmin')->attempt(['email' => $request->email, 'password' => $request->password])) {
+            return redirect()->route('superadmin.dashboard');
+        }
         if (Auth::guard('admin')->attempt(['email' => $request->email, 'password' => $request->password])) {
             return redirect()->route('admin.dashboard');
         }else{
@@ -44,11 +56,153 @@ class AdminController extends Controller
         }
     }
 
+    
+    public function loginWithOTP(UserFrontLoginWithOTPFormRequest $request)
+    {
+        $user = Admin::where('email', $request->email)->first();
+
+        if($user){
+            return $this->generateNewOTP($user);
+        }else{
+            return back()->withErrors(['email' => ['This Email is not exists.']]);
+        }
+    }
+
+
+    public function resndOTP()
+    {
+        if(!request()->session()->get('login_user_id')){
+            return redirect()->route('login');
+        }
+
+        $user = User::where('id', request()->session()->get('login_user_id'))->first();
+
+        if($user){
+            $verification = $this->generateOTP($user);
+            if($verification){
+                return redirect()->route('admin.getVerifyOTP')->with('otp_sent_success', 'OTP has been sent to your email. Valid for 5 minutes');
+            }else{
+                abort(404);
+            }
+        }else{
+            return back()->withErrors(['email' => ['This Email is not exists.']]);
+        }
+    }
+
+    protected function redirectTo()
+    {
+        $user = Auth::user();
+        
+        if($user) {
+            return 'admin/dashboard';
+        }
+        return '/home';
+    }
+
+    public function getVerifyOTP()
+    {
+
+
+        if(!request()->session()->get('login_user_id')){
+            return redirect()->route('admin.login');
+        }
+
+        
+        return view('admin.verify_otp', [
+            
+        ]);
+    }
+
+  
+
+    public function postVerifyOTP(UserFrontLoginVerifyOTPFormRequest $request)
+    {
+
+        // dd(request()->session()->get('login_user_id'));
+
+        $verification = admin_verification_codes::where([
+            'user_id'   => request()->session()->get('login_user_id'),
+            'otp'       => $request->otp
+        ])->where('expire_at', '>', Carbon::now())->first();
+
+        if(!$verification){
+            return redirect()->route('admin.getVerifyOTP')->withErrors(['otp' => ['Invalid OTP']]);
+        }
+        else{
+
+            $user = User::where('id', request()->session()->get('login_user_id'))->first();
+
+        \Auth::login($user);
+
+        $verification->delete();
+
+        request()->session()->forget('login_user_id');
+
+
+
+        return redirect($this->redirectTo());
+
+
+        }
+
+       
+
+
+
+
+
+
+       
+    
+    }
+
+    public function generateNewOTP($user)
+    {
+        $verification = $this->generateOTP($user);
+        if($verification){
+            return redirect()->route('admin.getVerifyOTP')->with('otp_sent_success', 'OTP has been sent to your email. Valid for 5 minutes');
+        }else{
+            abort(404);
+        }
+    }
+
+
+    public function generateOTP($user)
+    {
+        $otp = rand(100000, 999999);
+  
+        $verification = admin_verification_codes::where([
+            'user_id'   => $user->id
+        ])->first();
+
+        if(!$verification){
+            $verification = new admin_verification_codes();
+            $verification->user_id = $user->id;
+        }
+
+        $verification->expire_at = Carbon::now()->addMinutes(5);
+        $verification->otp = $otp;
+        $verification->save();
+
+        $data['from_name'] = config('mail.from.name');
+        $data['from_email'] = config('mail.from.address');
+        $data['subject'] = 'OTP Confirmation';
+        $data['otp'] = $otp;
+        $data['to_email'] = $user->email;
+        $data['to_name'] = $user->name;
+
+
+        Mail::send(new LoginOTP($data));
+
+        request()->session()->put('login_user_id', $user->id);
+
+        return $verification;
+
+    }
+
     public function dashboard()
     {
         $users_data=Conference::latest()->paginate(10);
-
-
 
         $countries = Conference::distinct()->pluck('country',)->toArray();
 
@@ -131,14 +285,9 @@ class AdminController extends Controller
     }
 
     public function delete(Request $request){
-
-        // dd($request);
-
-
         $user=Conference::find($request->id);
         $user->delete();
         return redirect()->route('admin.dashboard')->with('success', 'User Deleted Successfully.');
-
 
     }
 
@@ -239,9 +388,21 @@ class AdminController extends Controller
     }
 
 
-    public function logout(){
-        Auth::guard('admin')->logout();
-        return redirect()->route('admin.login')->with('message', 'User Deleted Successfully.');
+    public function logout(Request $request){
+
+        $user = Auth::user();
+
+        if ($user) {
+        Auth::logout(); // Log the user out
+
+        request()->session()->forget('login_user_id');
+       
+        return redirect(route('login'));
+    }
+
+    // Handle the case where no user is authenticated
+    return redirect('/')->with('error', 'No user is currently authenticated.');
+
     }
     public function edit(Request $request){
         $user=Conference::find($request->id);

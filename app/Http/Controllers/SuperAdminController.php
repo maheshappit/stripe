@@ -15,6 +15,8 @@ use Carbon\Carbon;
 use App\Mail\LoginOTP;
 use App\Models\Admin;
 use Mail;
+use Validator;
+
 
 class SuperAdminController extends Controller
 {
@@ -26,26 +28,92 @@ class SuperAdminController extends Controller
         return view('superadmin.login-form');
     }
 
+    public function createAdmin(Request $request)
+    {
+
+
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|max:255',
+                'role' => 'required',
+
+            ],
+           
+        );
+
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        } else {
+
+
+            // dd($user);
+
+            if ($request->role == 'user') {
+
+                $user = User::where('email', $request->email)->first();
+                if ($user) {
+
+                    return response()->json(['errors' => [['Email Already Exists']]], 422);
+                } else {
+
+                    User::create([
+
+                        'name' => $request->name,
+                        'email' => $request->email,
+                        'role' => "user",
+                        'password'=>'',
+
+                    ]);
+                }
+
+                return response()->json(['message' => 'User  Created successfully']);
+
+            } else if ($request->role == 'admin') {
+
+                $admin = User::where('email', $request->email)->first();
+
+                if ($admin) {
+
+                    return response()->json(['errors' => [['Email Already Exists']]], 422);
+                } else {
+
+                    User::create([
+
+                        'name' => $request->name,
+                        'email' => $request->email,
+                        'role' => "admin",
+                        'password'=>'',
+
+
+                    ]);
+                }
+
+                return response()->json(['message' => 'Admin  Created successfully']);
+            }
+        }
+    }
+
 
     public function getVerifyOTP()
     {
 
 
-        if(!request()->session()->get('login_user_id')){
+        if (!request()->session()->get('login_user_id')) {
             return redirect()->route('superadmin.login');
         }
 
-        
-        return view('superadmin.verify_otp', [
-            
-        ]);
+
+        return view('superadmin.verify_otp', []);
     }
 
     protected function redirectTo()
     {
         $user = Auth::user();
 
-        if($user) {
+        if ($user) {
             return 'superadmin/dashboard';
         }
         return '/home';
@@ -55,9 +123,9 @@ class SuperAdminController extends Controller
     {
         $user = SuperAdmin::where('email', $request->email)->first();
 
-        if($user){
+        if ($user) {
             return $this->generateNewOTP($user);
-        }else{
+        } else {
             return back()->withErrors(['email' => ['This Email is not exists.']]);
         }
     }
@@ -72,53 +140,40 @@ class SuperAdminController extends Controller
             'otp'       => $request->otp
         ])->where('expire_at', '>', Carbon::now())->first();
 
-        if(!$verification){
+        if (!$verification) {
             return redirect()->route('superadmin.getVerifyOTP')->withErrors(['otp' => ['Invalid OTP']]);
-        }
-        else{
+        } else {
 
             $user = SuperAdmin::where('id', request()->session()->get('login_user_id'))->first();
 
-        \Auth::login($user);
+            \Auth::login($user);
 
-        $verification->delete();
+            $verification->delete();
 
-        request()->session()->forget('login_user_id');
-
-
-
-        return redirect($this->redirectTo());
+            request()->session()->forget('login_user_id');
 
 
+
+            return redirect($this->redirectTo());
         }
-
-       
-
-
-
-
-
-
-       
-    
     }
 
     public function resndOTP()
     {
-        if(!request()->session()->get('login_user_id')){
+        if (!request()->session()->get('login_user_id')) {
             return redirect()->route('login');
         }
 
         $user = User::where('id', request()->session()->get('login_user_id'))->first();
 
-        if($user){
+        if ($user) {
             $verification = $this->generateOTP($user);
-            if($verification){
+            if ($verification) {
                 return redirect()->route('admin.getVerifyOTP')->with('otp_sent_success', 'OTP has been sent to your email. Valid for 5 minutes');
-            }else{
+            } else {
                 abort(404);
             }
-        }else{
+        } else {
             return back()->withErrors(['email' => ['This Email is not exists.']]);
         }
     }
@@ -127,9 +182,9 @@ class SuperAdminController extends Controller
     public function generateNewOTP($user)
     {
         $verification = $this->generateOTP($user);
-        if($verification){
+        if ($verification) {
             return redirect()->route('superadmin.getVerifyOTP')->with('otp_sent_success', 'OTP has been sent to your email. Valid for 5 minutes');
-        }else{
+        } else {
             abort(404);
         }
     }
@@ -137,12 +192,12 @@ class SuperAdminController extends Controller
     public function generateOTP($user)
     {
         $otp = rand(100000, 999999);
-  
+
         $verification = SuperAdminVerificationCodes::where([
             'user_id'   => $user->id
         ])->first();
 
-        if(!$verification){
+        if (!$verification) {
             $verification = new SuperAdminVerificationCodes();
             $verification->user_id = $user->id;
         }
@@ -164,23 +219,24 @@ class SuperAdminController extends Controller
         request()->session()->put('login_user_id', $user->id);
 
         return $verification;
-
     }
 
 
-    public function dashboard(){
+    public function dashboard()
+    {
         return view('superadmin.dashboard');
     }
 
-    public function logout(Request $request){
+    public function logout(Request $request)
+    {
         $user = Auth::user();
 
         if ($user) {
-        Auth::logout(); // Log the user out
+            Auth::logout(); // Log the user out
 
-        request()->session()->forget('login_user_id');
-       
-        return redirect(route('superadmin.login'));
+            request()->session()->forget('login_user_id');
+
+            return redirect(route('superadmin.login'));
         }
     }
 

@@ -1,3 +1,4 @@
+@extends('layouts.add_admins')
 <head>
 <meta name="csrf-token" content="{{ csrf_token() }}">
     <script src="https://kit.fontawesome.com/b99e675b6e.js"></script>
@@ -512,12 +513,12 @@ table.dataTable > tbody > tr {
                             <div class="dd_item">Profile</div>
                             <div class="dd_item">Change Password</div>
                             <div class="dd_item" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="{{ route('superadmin.logout') }}" onclick="event.preventDefault();
+                                <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
                                     {{ __('Logout') }}
                                 </a>
 
-                                <form id="logout-form" action="{{ route('superadmin.logout') }}" method="POST" class="d-none">
+                                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                                     @csrf
                                 </form>
                             </div>
@@ -542,9 +543,11 @@ table.dataTable > tbody > tr {
                         <p>Welcome</p>
                         <p class="profile_name">
 
-                              @if (auth('superadmin')->check())
-                                {{ auth('superadmin')->user()->name }}
-                                @endif 
+                        
+
+                              @if (Auth::check())
+                                {{ Auth::user()->name }}
+                                @endif      
                         </p>
                     </div>
                 </div>
@@ -552,7 +555,7 @@ table.dataTable > tbody > tr {
 
 
                 <li>
-                        <a href="{{ route('home') }}" class="{{ ((Request::is('home')) ? 'active' : ' ') }}">
+                        <a href="{{ route('superadmin.dashboard') }}" class="{{ ((Request::is('superadmin/dashboard')) ? 'active' : ' ') }}">
                             <span class="icon"><i class="fas fa-dice-d6"></i></span>
                             <span class="title">Home</span>
                         </a>
@@ -562,9 +565,7 @@ table.dataTable > tbody > tr {
              
               
                     <li>
-                        <a href="{{ route('show.conferences') }}" class="{{ ((Request::is('show.conferences')) ? 'active' : ' ') }}">
-
-
+                        <a href="{{ route('superadmin.show.conferences') }}" class="{{ ((Request::is('superadmin/conferences')) ? 'active' : ' ') }}">
                             <span class="icon"><i class="fas fa-dice-d6"></i></span>
                             <span class="title">Conferences</span>
                         </a>
@@ -572,14 +573,14 @@ table.dataTable > tbody > tr {
                     </li>
 
                     <li>
-                        <a href="{{route('show.upload')}}" class="{{ ((Request::is('show-upload-form')) ? 'active' : ' ') }}">
+                        <a href="{{route('superadmin.show.upload')}}" class="{{ ((Request::is('show-upload-form')) ? 'active' : ' ') }}">
                             <span class="icon"><i class="fab fa-delicious"></i></span>
                             <span class="title">Upload</span>
                         </a>
                     </li>
                  
                     <li>
-                        <a href="{{route('show.report')}}" class="{{ ((Request::is('show-report')) ? 'active' : ' ') }}">
+                        <a href="{{route('superadmin.show.report')}}" class="{{ ((Request::is('show-report')) ? 'active' : ' ') }}">
                             <span class="icon"><i class="fas fa-chart-pie"></i></span>
                             <span class="title">Reports</span>
                         </a>

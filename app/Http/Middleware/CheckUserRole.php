@@ -20,13 +20,17 @@ class CheckUserRole
         // Check if the authenticated user has the required role
         if (Auth::check()) {
             $userRole = Auth::user()->role;
+            
 
             // Check user role and redirect accordingly
             switch ($userRole) {
                 case 'user':
                     return $next($request); // Allow access to the home route
                 case 'admin':
-                    return redirect()->route('admin.dashboard'); // Redirect to admin dashboard
+                    return redirect()->route('admin.dashboard'); // 
+        
+                 case 'superadmin':
+                return redirect()->route('superadmin.dashboard'); 
             }
         }
 

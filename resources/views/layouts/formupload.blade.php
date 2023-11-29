@@ -71,7 +71,7 @@
                             <button class="btn btn-primary" id="uploadButton" type="submit">Upload</button>
                         </form>
 
-                        <a href="{{ asset('Samples/Sample.csv') }}" download>Sample Headers File Download</a>
+                        <!-- <a href="{{ asset('Samples/Sample.csv') }}" download>Sample Headers File Download</a> -->
 
                         <div id="message" style="color: red"></div>
                         <div id="inserted_count" style="color: green"></div>

@@ -21,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role'
     ];
 
     /**
@@ -58,4 +59,14 @@ class User extends Authenticatable
     {
         return $this->role === 'user'; // Assuming you have a 'role' column in your users table
     }
+
+    public function isSuperAdmin()
+    {
+        return $this->role === 'superadmin'; // Assuming you have a 'role' column in your users table
+    }
+
+
+    
+
+    
 }

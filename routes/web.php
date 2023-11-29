@@ -28,8 +28,10 @@ Route::post('superadmin/register',[AdminController::class,'create'])->name('supe
 
 
 Route::middleware(['checkUserRole'])->group(function () {
+    
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-   
+    Route::any('upload',[CsvController::class,'upload'])->name('upload');
+
     Route::get('edit', [App\Http\Controllers\HomeController::class, 'edit'])->name('user.edit');
     Route::get('/conferences',[ConferenceController::class,'index'])->name('show.conferences');
     Route::post('conferenceDetails/upload',[ConferenceController::class,'store'])->name('conferencedetails.save');
@@ -39,31 +41,38 @@ Route::middleware(['checkUserRole'])->group(function () {
     Route::post('/download-report', [App\Http\Controllers\UserController::class, 'downloadReport'])->name('report.download');
     Route::post('/download-emails', [App\Http\Controllers\UserController::class, 'downloadEmails'])->name('download.email');
     // Route::view('/upload', 'upload-form'); // Display the form
-    Route::any('upload',[CsvController::class,'upload'])->name('upload');
+    Route::post('upload',[CsvController::class,'upload'])->name('user.upload');
     Route::any('show-upload-form',[CsvController::class,'show'])->name('show.upload');
     Route::get('/upload-csv-progress', [CsvController::class,'progress'])->name('progress');
     Route::any('/all-conferences/{id}', [App\Http\Controllers\HomeController::class,'allClients'])->name('all-conferences');
     Route::any('/all-articles/{id}', [App\Http\Controllers\HomeController::class,'allTopics'])->name('all-articles');
 
     
-
-
     
 
 });
 
 Route::group(['middleware'=>'admin'],function(){
 
-    Route::post('admin/register',[AdminController::class,'create'])->name('admin.register');
-    Route::any('admin/logout',[AdminController::class,'logout'])->name('admin.logout');
-    Route::get('admin/dashboard',[AdminController::class,'dashboard'])->name('admin.dashboard');
-    Route::get('admin/edit',[AdminController::class,'edit'])->name('admin.edit');
-    Route::post('admin/update/{id}',[AdminController::class,'update'])->name('admin.update');
-    Route::get('admin/delete',[AdminController::class,'delete'])->name('admin.delete');
-    Route::any('admin/upload',[AdminController::class,'upload'])->name('admin.upload');
+    Route::get('admin/users', [AdminController::class, 'users'])->name('admin.users');
 
+    Route::any('admin/upload',[AdminController::class,'upload'])->name('admin.upload');
+    Route::any('admin/show',[AdminController::class,'show'])->name('admin.show.upload');
+    Route::get('admin/conferences',[AdminController::class,'conferences'])->name('admin.show.conferences');
+    Route::any('admin/dashboard',[AdminController::class,'dashboard'])->name('admin.dashboard');
+    Route::get('admin/show-report', [AdminController::class, 'showReport'])->name('admin.show.report');
+    Route::post('/admin/download-report', [AdminController::class, 'downloadReport'])->name('admin.report.download');
 
 });
+
+
+
+Route::group(['middleware'=>'superadmin'],function(){
+
+    Route::get('/superadmin/dashboard',[SuperAdminController::class,'dashboard'])->name('superadmin.dashboard');   
+   
+});
+
 
 
 

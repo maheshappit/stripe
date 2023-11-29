@@ -86,7 +86,9 @@ $(document).ready(function() {
 
 
 
-                if (xhr.status === 0) {
+                if (xhr.status == 0) {
+
+                    $('#error-message').text('');
 
                     
                     $('#message')
@@ -125,7 +127,9 @@ $(document).ready(function() {
             processData: false,
             contentType: false,
             success: function(response) {
-                $('#error-message').remove();
+
+                $('#error-message').text('');
+
 
                 $('#message').text(response.message).show();
                 $('#inserted_count').text(response.inserted_count).show();
@@ -146,7 +150,7 @@ $(document).ready(function() {
                         errorMessage += errorResponse.errors[key][0] + '<br>';
                     });
                 }
-                $('#message').remove();
+                $('#message').text('');
 
                 $('#error-message').html(errorMessage).show();
                 document.getElementById('uploadButton').disabled = false;
@@ -293,6 +297,7 @@ function handleValidationErrors(errors) {
                 <div>
                     <label for="conference">Conference:</label>
                     <select class="custom-select"   name="conference">
+                        <option value="">--Choose Conference--</option>
                         @foreach($conferences as $code )
                         <option value="{{ $code->name}}">{{ $code->name}}</option>
                         @endforeach
@@ -336,7 +341,17 @@ function handleValidationErrors(errors) {
 
         <form id="uploadForm" enctype="multipart/form-data">
         @csrf
+
+       
         <input type="file" name="csvFile" accept=".csv">
+
+        <label for="conference">Conference:</label>
+                    <select class="custom-select"   name="conference">
+                        <option value="">--Choose Conference--</option>
+                        @foreach($conferences as $code )
+                        <option value="{{ $code->name}}">{{ $code->name}}</option>
+                        @endforeach
+                    </select>
         <button class="btn btn-primary" id="uploadButton" type="submit">Upload</button>
 
         <div id="message" style="color: green"></div>

@@ -26,6 +26,11 @@ class RedirectIfAuthenticated
                 } elseif (Auth::user()->isAdmin()) {
                     return redirect('admin/dashboard');
                 }
+
+                elseif (Auth::user()->isSuperAdmin()) {
+                    return redirect('superadmin/dashboard');
+                }
+                
             }
         }
 

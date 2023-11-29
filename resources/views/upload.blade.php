@@ -3,11 +3,23 @@
 @section('dashboard-content')
 
 <div class="item">
+
     <form id="uploadForm" enctype="multipart/form-data">
         @csrf
+       
+        <label for="conference">Conference:</label>
+                    <select class="custom-select"   name="conference">
+                        <option value="">--Choose Conference--</option>
+                        @foreach($conferences as $code )
+                        <option value="{{ $code->name}}">{{ $code->name}}</option>
+                        @endforeach
+                    </select>
         <input type="file" name="csvFile" accept=".csv">
         <button class="btn btn-primary" id="uploadButton" type="submit">Upload</button>
     </form>
+
+    
+ 
 
     <a href="{{ asset('Samples/Sample.csv') }}" download>Sample Headers File Download</a>
 
@@ -33,10 +45,8 @@
             xhr: function(res) {
                 var xhr = new window.XMLHttpRequest();
 
-
-
-
-                if (xhr.status === 0) {
+                if (xhr.status == 0) {
+                    $('#error-message').text('');
 
                     
                     $('#message')
@@ -75,7 +85,7 @@
             processData: false,
             contentType: false,
             success: function(response) {
-                $('#error-message').remove();
+                $('#error-message').text('');
 
                 $('#message').text(response.message).show();
                 $('#inserted_count').text(response.inserted_count).show();
@@ -96,7 +106,7 @@
                         errorMessage += errorResponse.errors[key][0] + '<br>';
                     });
                 }
-                $('#message').remove();
+                $('#message').text('');
 
                 $('#error-message').html(errorMessage).show();
                 document.getElementById('uploadButton').disabled = false;

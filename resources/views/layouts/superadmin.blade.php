@@ -98,7 +98,7 @@ table.dataTable > tbody > tr {
                         d.country = $('#country').val();
                        d.article=$('#article').val();
                        d.user=$('#user').val();
-                       d.user_create_at=$('#user_created_at').val();
+                       d.user_created_at=$('#user_created_at').val();
                        d.user_updated_at=$('#user_updated_at').val();
 
                        

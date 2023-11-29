@@ -9,11 +9,11 @@
                     $(document).ready(function() {
                         $('.country').select2();
                         $('.conference').select2();
-                        $('.db').select2();
-                        $('.technology').select2();
-                        $('.speciality').select2();
                         $('.article').select2();
-                        $('.user').select2();
+                        $('.user_created_at').input();
+
+                        
+                       
                         
                     });
                 </script>
@@ -56,7 +56,7 @@
         });
 
         function displayClientNames(topicNames) {
-            var html = '<h2>Client Names:</h2><select><option value="all">All</option>';
+            var html = '<h2>Client Names:</h2><select><option value="All">All</option>';
             $.each(topicNames, function (index, clientName) {
                 html += '<option>' + clientName + '</option>';
             });
@@ -149,13 +149,14 @@
 
             <div>
                 <label for="country">Updated Date:</label>
-                <input type="date" name="user_updated_at" class="user_created_at" id="user_created_at">
+                <input type="date" name="user_updated_at" class="user_updated_at" id="user_updated_at">
             </div>
 
             <div>
                 <div>
                 <button id="search-btn" class="btn-sm btn-primary">Search</button>
 
+                
                 </div>
 
 

@@ -56,7 +56,7 @@
         });
 
         function displayClientNames(topicNames) {
-            var html = '<h2>Client Names:</h2><select><option value="all">All</option>';
+            var html = '<h2>Client Names:</h2><select><option value="All">All</option>';
             $.each(topicNames, function (index, clientName) {
                 html += '<option>' + clientName + '</option>';
             });

@@ -97,7 +97,7 @@ table.dataTable > tbody > tr {
                         d.country = $('#country').val();
                        d.article=$('#article').val();
                        d.user=$('#user').val();
-                       d.user_create_at=$('#user_created_at').val();
+                       d.user_created_at=$('#user_created_at').val();
                        d.user_updated_at=$('#user_updated_at').val();
 
                        
@@ -120,7 +120,11 @@ table.dataTable > tbody > tr {
 
                 columns: [{
                         title: 'Serial Number',
-                        data: 'id'
+                        data: 'id',
+                        "render": function (data, type, row, meta) {
+                    // 'meta.row' is the row index, 'meta.settings._iDisplayStart' is the page start index
+                    return meta.row + meta.settings._iDisplayStart + 1;
+                }
                     },
 
                     {

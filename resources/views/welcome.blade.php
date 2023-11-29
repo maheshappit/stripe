@@ -99,7 +99,11 @@
 
                 columns: [{
                         title: 'Serial Number',
-                        data: 'id'
+                        data: null,
+                        "render": function (data, type, row, meta) {
+                    // 'meta.row' is the row index, 'meta.settings._iDisplayStart' is the page start index
+                    return meta.row + meta.settings._iDisplayStart + 1;
+                }
                     },
                     {
                         data: 'create_date',

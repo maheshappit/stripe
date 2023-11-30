@@ -5,6 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\SuperAdmin;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\ConferencesData;
+use App\Models\Conference;
+use DataTables;
+use League\Csv\Reader;
+
+
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
@@ -28,6 +34,467 @@ class SuperAdminController extends Controller
         return view('superadmin.login-form');
     }
 
+    public function showReport()
+    {
+
+
+        $all_users = User::all();
+        return view('superadmin.reports', compact('all_users'));
+    }
+    public function upload(Request $request)
+    {
+
+        $now = Carbon::now();
+
+
+        $currentDateTime = $now->toDateString();
+
+
+
+        $userID = Auth::id();
+        // dd($userID);
+        $request->validate([
+            'csvFile' => 'required|mimes:csv,txt|max:10000000',
+            'conference' => 'required',
+        ]);
+
+
+
+        $file = $request->file('csvFile');
+        $path = $file->getRealPath();
+
+        $csv = Reader::createFromPath($path, 'r');
+        $headers = $csv->fetchOne();
+
+        // dd($headers);
+
+        $csv->setHeaderOffset(0);
+
+        //if upload from file upload and move to public uploads
+
+        // $file = $request->file('csvFile');
+
+        // $filePath = $file->move(public_path('uploads'), $file->getClientOriginalName()); // Move the file to 'public/uploads' directory
+
+        // $csv = Reader::createFromPath($filePath, 'r');
+        // $csv->setHeaderOffset(0); // Set the CSV header row
+
+
+        $update_count = 0;
+        $errorCount = 0;
+        $insertcount = 0;
+
+
+
+
+        foreach ($csv as $row) {
+            $email = $row['Email'];
+            $conference = $row['Conference'];
+            $article = $row['Article'];
+
+
+            // Check if the record exists based on the email
+            $model = Conference::where('email', $email)->where('conference', $request->conference)->where('article', $article)->first();
+
+            if ($model) {
+                // If the record exists, update it
+                $model->update([
+                    'name' => $row['Name'],
+                    // 'email' => $row['Email'],
+                    // 'article' => $row['Article'],
+                    // 'conference' => $row['Conference'],
+                    'country' => $row['Country'],
+
+                    'user_id' => $request->user()->id,
+
+                    'user_updated_at' => $currentDateTime,
+                    // 'updated_at'=>'',
+                ]);
+                $update_count++;
+            } else {
+                // If the record doesn't exist, create a new one
+
+                Conference::create([
+
+                    'name' => $row['Name'],
+                    'email' => $row['Email'],
+                    'article' => $row['Article'],
+                    // 'conference' => $row['Conference'],
+                    'conference' => $request->conference,
+                    'country' => $row['Country'],
+                    'user_id' => $request->user()->id,
+
+                    'user_created_at' => $currentDateTime,
+                    // 'updated_at'=>'',
+
+                ]);
+                $insertcount++;
+            }
+        }
+
+
+        //if upload from uploads
+        // if (file_exists($filePath)) {
+        //     unlink($filePath);
+        // } 
+
+
+        return response()->json([
+            'inserted_count' => 'Inserted Records Count: ' . $insertcount,
+            'updated_count' => 'Updated Records Count: ' . $update_count,
+            'message' => 'Data Uploaded Successfully',
+        ]);
+    }
+
+    public function AllUsers(){
+
+        $all_users = User::paginate(10);
+        return view('superadmin.all-users',compact('all_users'));
+
+    }
+
+    public function UserShow($id)
+    {
+        try {
+            // Your logic to fetch data for a specific ID
+            $data = user::findOrFail($id);
+
+            return response()->json($data);
+        } catch (\Exception $e) {
+            // Handle errors, for example, return an error response
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+
+  
+
+    public function userUpdate(Request $request)
+    {
+
+        $user = User::findOrFail($request->id);
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->role = $request->role;
+
+        $user->save();
+        return response()->json([
+            'message' => 'User  Updated Successfully',
+            'status_code' => '200'
+
+        ], 200);
+    }
+
+
+    public function userDelete(Request $request)
+    {
+
+
+
+
+        $user = User::findOrFail($request->id);
+
+        $user->delete();
+        return response()->json([
+            'message' => 'User  Deleted Successfully',
+            'status_code' => '200'
+
+        ], 200);
+    }
+   
+
+
+
+
+
+    public function downloadReport(Request $request)
+    {
+
+        // dd($request->all())
+
+        $all_users = User::all();
+
+
+        $f_date = Carbon::parse($request->from_date);
+        $startDate = $f_date->format('Y-m-d');
+        // dd($startDate);
+        $t_date = Carbon::parse($request->to_date);
+        $endDate = $t_date->format('Y-m-d');
+
+        $request->validate([
+            'from_date' => 'required',
+            'to_date' => 'required',
+
+        ]);
+
+
+
+        $query = Conference::query();
+
+        $query->join('users', 'users.id', '=', 'conferences.user_id');
+        $query->whereBetween('conferences.user_created_at', [$startDate, $endDate]);
+
+        if ($request->user_id == 'All') {
+            $query->select('users.id', 'users.name', 'users.created_at');
+            $query->selectRaw(
+                '
+            COUNT(DISTINCT CASE WHEN conferences.user_created_at IS NOT NULL THEN conferences.id END) as inserted_count,
+            COUNT(DISTINCT CASE WHEN conferences.user_updated_at IS NOT NULL THEN conferences.id END) as updated_count,
+            SUM(conferences.download_count) as download_count'
+            );
+            $query->whereNotNull('conferences.user_created_at'); // Only count inserted records
+            $query->groupBy('users.id', 'users.name', 'users.created_at');
+        } else {
+            $query->where('conferences.user_id', $request->user_id);
+            $query->select('users.id', 'users.name', 'users.created_at');
+
+            $query->selectRaw(
+                '
+            users.id, users.name,
+            SUM(CASE WHEN conferences.user_created_at IS NOT NULL THEN 1 ELSE 0 END) as inserted_count,
+            SUM(CASE WHEN conferences.user_updated_at IS NOT NULL THEN 1 ELSE 0 END) as updated_count,
+            SUM(conferences.download_count) as download_count'
+            );
+            $query->groupBy('users.id', 'users.name', 'users.created_at');
+        }
+
+
+        $result = $query->get();
+
+        return DataTables::of($result)
+            ->make(true);
+    }
+
+    public function allClients(Request $request, $id)
+    {
+
+        if ($request->id === 'All') {
+            // If 'All' is selected, fetch all client names
+            $conferenceNames = Conference::distinct()->pluck('conference')->toArray();
+        } else {
+            // Fetch client names based on the selected country ID
+            $conferenceNames = Conference::where('country', $id)->distinct()->pluck('conference')->toArray();
+        }
+
+
+        $encodedClientNames = array_map('utf8_encode', $conferenceNames);
+        return response()->json(['conferenceNames' => $encodedClientNames]);
+    }
+
+
+    public function allTopics(Request $request, $id)
+    {
+
+        if ($request->id === 'All') {
+            // If 'All' is selected, fetch all client names
+            $topicNames = Conference::distinct()->pluck('article')->toArray();
+        } else {
+            // Fetch client names based on the selected country ID
+            $topicNames = Conference::where('conference', $id)->distinct()->pluck('article')->toArray();
+        }
+
+        $encodedClientNames = array_map('utf8_encode', $topicNames);
+        return response()->json(['topicNames' => $encodedClientNames]);
+    }
+
+    public function users(Request $request)
+    {
+
+
+
+        $query = Conference::query();
+
+        if ($request->search) {
+            $query->where('country', 'like', '%' . $request->search . '%');
+        } else {
+            $query->whereNotNull('country')->orderBy('created_at', 'desc');
+        }
+
+
+
+
+        if ($request->country == 'All') {
+
+            $query->whereNotNull('country')->orderBy('created_at', 'desc');
+        } else {
+            $query->where('country', 'like', '%' . $request->country . '%')->orderBy('created_at', 'desc');
+        }
+
+        if ($request->conference == 'All') {
+
+            $query->whereNotNull('conference');
+        } else {
+            $query->where('conference', 'like', '%' . $request->conference . '%')->orderBy('created_at', 'desc');
+        }
+
+        if ($request->article == 'All') {
+
+            $query->whereNotNull('article')->orderBy('created_at', 'desc');
+        } else {
+            $query->where('article', 'like', '%' . $request->article . '%')->orderBy('created_at', 'desc');
+        }
+
+
+        if ($request->user == 'All') {
+
+            $query->whereNotNull('email')->orderBy('created_at', 'desc');
+        } else {
+            $query->where('user_id', 'like', '%' . $request->user . '%')->orderBy('created_at', 'desc');
+        }
+
+
+
+
+
+        //for all country,conference,articles,users,created,updated dates
+        if ($request->country == 'All' && $request->conference == 'All' && $request->article == 'All' && $request->user == 'All' && $request->user_created_at  == '' && $request->user_updated_at == '') {
+            $query->whereNotNull('country')->whereNotNull('conference')->whereNotNull('article')->whereNotNull('user_id');
+        }
+
+
+        //for all country,articles,users,created,updated dates and particular conference
+        if ($request->country == 'All' && $request->conference == 'All' && $request->article == 'All' && $request->user == 'All' && $request->user_created_at  != '' && $request->user_updated_at == null) {
+
+            // dd($request->user_created_at);
+            $query->where('user_created_at', $request->user_created_at);
+        }
+
+
+        if ($request->country == 'All' && $request->conference == 'All' && $request->article == 'All' && $request->user == 'All' && $request->user_created_at  == '' && $request->user_updated_at != '') {
+
+            // dd($request->user_created_at);
+            $query->where('user_updated_at', $request->user_updated_at);
+        }
+
+        //for all country,articles,users,created,updated dates and particular artcile
+        if ($request->country == 'All' && $request->conference == 'All' && $request->article == 'All' && $request->user == 'All' && $request->user_created_at  != '' && $request->user_updated_at != '') {
+
+            // dd($request->user_created_at);
+            $query->where('user_created_at', $request->user_created_at)->where('user_updated_at', $request->user_updated_at);
+        }
+
+
+        if ($request->country == 'All' && $request->conference != 'All' && $request->article == 'All' && $request->user == 'All' && $request->user_created_at  != '' && $request->user_updated_at == '') {
+
+            // dd($request->user_created_at);
+            $query->where('user_created_at', $request->user_created_at)->where('conference', $request->conference);
+        }
+
+
+        if ($request->country == 'All' && $request->conference != 'All' && $request->article == 'All' && $request->user == 'All' && $request->user_created_at  != '' && $request->user_updated_at != '') {
+
+            // dd($request->user_created_at);
+            $query->where('user_created_at', $request->user_created_at)->where('conference', $request->conference)->where('user_created_at', $request->user_created_at);
+        }
+
+
+
+
+
+        //particular country and all-->conferences,articles,users,created,updated dates
+        if ($request->country != 'All' && $request->conference == 'All' && $request->article == 'All' && $request->user == 'All' && $request->user_created_at  == '' && $request->user_updated_at == '') {
+            $query->where('country', $request->country)->whereNotNull('conference');
+        }
+
+        //particular country,conference and all-->conferences,articles,users,created,updated dates
+
+        if ($request->country != 'All' && $request->conference != 'All' && $request->article == 'All' && $request->user == 'All' && $request->user_created_at  == '' && $request->user_updated_at == '') {
+            // dd($request);
+            $query->where('country', $request->country)->where('conference', $request->conference);
+        }
+
+
+        if ($request->country != 'All' && $request->conference != 'All' && $request->article == 'All' && $request->user != 'All' && $request->user_created_at  == '' && $request->user_updated_at == '') {
+            // dd($request);
+            $query->where('country', $request->country)->where('conference', $request->conference)->where('user_id', $request->user);
+        }
+
+        if ($request->country != 'All' && $request->conference != 'All' && $request->article == 'All' && $request->user != 'All' && $request->user_created_at  != '' && $request->user_updated_at == '') {
+            // dd($request);
+            $query->where('country', $request->country)->where('conference', $request->conference)->where('user_id', $request->user)->where('user_created_at', $request->user_created_at);
+        }
+
+
+
+        //particular country,conference,article, all users,all dates
+        if ($request->country != 'All' && $request->conference != 'All' && $request->article == '!All' && $request->user == 'All' && $request->user_created_at  == '' && $request->user_updated_at == '') {
+            // dd($request);
+            $query->where('country', $request->country)->where('conference', $request->conference)->where('article', $request->article)->whereNotNull('user_id')->orderBy('created_at', 'desc');
+        }
+
+
+        //particular country,conference,article, users,all dates
+        if ($request->country != 'All' && $request->conference != 'All' && $request->article == '!All' && $request->user != 'All' && $request->user_created_at  == '' && $request->user_updated_at == '') {
+            // dd($request);
+            $query->where('country', $request->country)->where('conference', $request->conference)->whereNotNull('article')->where('user_id', $request->user)->orderBy('created_at', 'desc');
+        }
+
+
+        //particular country,conference,article,user,user created date,all 
+
+        if ($request->country != 'All' && $request->conference != 'All' && $request->article == '!All' && $request->user != 'All' && $request->user_created_at  != '' && $request->user_updated_at == '') {
+            // dd($request);
+            $query->where('country', $request->country)->where('conference', $request->conference)->whereNotNull('article')->whereNotNull('user_id')->where('user_created_at', $request->user_created_at)->orderBy('created_at', 'desc');
+        }
+
+
+        if ($request->country != 'All' && $request->conference != 'All' && $request->article == '!All' && $request->user != 'All' && $request->user_created_at  == '' && $request->user_updated_at != '') {
+            // dd($request);
+            $query->where('country', $request->country)->where('conference', $request->conference)->whereNotNull('article')->whereNotNull('user_id')->where('user_updated_at', $request->user_created_at)->orderBy('created_at', 'desc');
+        }
+
+
+        //particular country,conference,article,user,user created date,user updated date
+
+        if ($request->country != 'All' && $request->conference != 'All' && $request->article == '!All' && $request->user != 'All' && $request->user_created_at  != '' && $request->user_updated_at != '') {
+            // dd($request);
+            $query->where('country', $request->country)->where('conference', $request->conference)->whereNotNull('article')->whereNotNull('user_id')->where('user_created_at', $request->user_created_at)->where('user_updated_at', $request->user_updated_at)->orderBy('created_at', 'desc');
+        }
+
+
+        //country,conference,article,user,created,updated
+        if ($request->country == 'All' && $request->conference != 'All' && $request->article != 'All' && $request->user != 'All' && $request->user_created_at  != '' && $request->user_updated_at != '' && $request->user_created_at) {
+            // dd($request);
+            $query->whereNotNull('country')->where('conference', $request->conference)->where('article', $request->article)->where('user_id', $request->user)->where('user_created_at', $request->user_created_at)->where('user_updated_at', $request->user_updated_at)->orderBy('created_at', 'desc');
+        }
+
+
+
+
+        if ($request->country != 'All' && $request->conference != 'All' && $request->article == 'All' && $request->user == 'All' && $request->user_created_at  != '' && $request->user_updated_at == '') {
+            // dd($request);
+
+            $query->where('country', $request->country)->where('conference', $request->conference)->where('user_created_at', $request->user_created_at);
+        }
+
+        if ($request->country != 'All' && $request->conference != 'All' && $request->article == 'All' && $request->user == 'All' && $request->user_created_at  != '' && $request->user_updated_at != '') {
+            // dd($request);
+
+            $query->where('country', $request->country)->where('conference', $request->conference)->where('user_created_at', $request->user_created_at)->where('user_updated_at', $request->user_updated_at);
+        }
+
+        if ($request->country != 'All' && $request->conference == 'All' && $request->article == 'All' && $request->user != 'All' && $request->user_created_at  != '') {
+
+            $query->where('country', $request->country)->where('user_id', $request->user)->where('user_created_at', $request->user_created_at);
+        }
+
+
+
+
+
+
+
+
+
+        return Datatables::of($query)
+            ->addIndexColumn()
+            ->addColumn('posted_by', function ($row) {
+                return $row->postedby->name ?? '';
+            })
+            ->rawColumns(['posted_by'])
+            ->make(true);
+    }
+
     public function createAdmin(Request $request)
     {
 
@@ -40,7 +507,7 @@ class SuperAdminController extends Controller
                 'role' => 'required',
 
             ],
-           
+
         );
 
 
@@ -64,13 +531,12 @@ class SuperAdminController extends Controller
                         'name' => $request->name,
                         'email' => $request->email,
                         'role' => "user",
-                        'password'=>'',
+                        'password' => '',
 
                     ]);
                 }
 
                 return response()->json(['message' => 'User  Created successfully']);
-
             } else if ($request->role == 'admin') {
 
                 $admin = User::where('email', $request->email)->first();
@@ -85,7 +551,7 @@ class SuperAdminController extends Controller
                         'name' => $request->name,
                         'email' => $request->email,
                         'role' => "admin",
-                        'password'=>'',
+                        'password' => '',
 
 
                     ]);
@@ -94,6 +560,25 @@ class SuperAdminController extends Controller
                 return response()->json(['message' => 'Admin  Created successfully']);
             }
         }
+    }
+
+
+    public function conferences(Request $request)
+    {
+
+        $conferences = ConferencesData::all();
+        $countries = Conference::distinct()->pluck('country',)->toArray();
+        $users = User::all();
+
+        return view('superadmin.conferences', compact('conferences', 'countries', 'users'));
+    }
+
+    public function show()
+    {
+
+        $conferences = ConferencesData::all();
+
+        return view('superadmin.upload', compact('conferences'));
     }
 
 
@@ -256,13 +741,6 @@ class SuperAdminController extends Controller
         //
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
 
     /**
      * Show the form for editing the specified resource.
@@ -271,6 +749,7 @@ class SuperAdminController extends Controller
     {
         //
     }
+
 
     /**
      * Update the specified resource in storage.

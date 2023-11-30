@@ -14,7 +14,9 @@
     <!-- //bootstap css cdn -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <!-- Demo CSS -->
-
+<!-- //toaster -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
 
     <link href="https://cdn.datatables.net/v/bs5/jqc-1.12.4/jszip-3.10.1/dt-1.13.6/b-2.4.2/b-colvis-2.4.2/b-html5-2.4.2/b-print-2.4.2/fh-3.4.0/r-2.5.0/sc-2.2.0/sb-1.6.0/datatables.css" rel="stylesheet">
 
@@ -118,9 +120,14 @@ table.dataTable > tbody > tr {
                     }
                 },
 
-                columns: [{
+                columns: [
+                    {
                         title: 'Serial Number',
-                        data: 'id'
+                        data: 'id',
+                        "render": function (data, type, row, meta) {
+                    // 'meta.row' is the row index, 'meta.settings._iDisplayStart' is the page start index
+                    return meta.row + meta.settings._iDisplayStart + 1;
+                }
                     },
 
                     {
@@ -348,7 +355,7 @@ table.dataTable > tbody > tr {
                 $('#country').change();
 
 
-                var url = "{{ route('all-conferences', ['id' => 'id']) }}";
+                var url = "{{ route('admin.all.conferences', ['id' => 'id']) }}";
                 url = url.replace('id', my);
 
                 // Make an AJAX request to retrieve conference names based on the selected country
@@ -407,7 +414,7 @@ table.dataTable > tbody > tr {
                     // Get the selected country value
                     var selectedCountry = $(this).val();
 
-                    var url = "{{ route('all-conferences', ['id' => 'id']) }}";
+                    var url = "{{ route('admin.all.conferences', ['id' => 'id']) }}";
                     url = url.replace('id', selectedCountry);
 
                     // Make an AJAX request to retrieve conference names based on the selected country
@@ -582,6 +589,13 @@ table.dataTable > tbody > tr {
                         <a href="{{route('admin.show.report')}}" class="{{ ((Request::is('admin/show-report')) ? 'active' : ' ') }}">
                             <span class="icon"><i class="fas fa-chart-pie"></i></span>
                             <span class="title">Reports</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{{route('admin.show.allusers')}}" class="{{ ((Request::is('admin/show-allusers')) ? 'active' : ' ') }}">
+                            <span class="icon"><i class="fas fa-chart-pie"></i></span>
+                            <span class="title">All Users</span>
                         </a>
                     </li>
 

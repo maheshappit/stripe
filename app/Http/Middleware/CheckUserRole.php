@@ -35,6 +35,6 @@ class CheckUserRole
         }
 
         // Redirect or handle unauthorized access
-        return redirect('/')->with('error', 'Unauthorized access');
+        return redirect('/login')->with('error', 'Unauthorized access');
     }
 }

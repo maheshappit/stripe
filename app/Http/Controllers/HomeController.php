@@ -33,13 +33,13 @@ class HomeController extends Controller
      */
 
 
-     public function getClients(Request $request){
+    public function getClients(Request $request)
+    {
 
         $client_names = Conference::where('country', $request->country_name)->distinct()->pluck('client_name')->toArray();
         $dba_names = Conference::distinct()->pluck('database_creator_name',)->toArray();
         $countries = Conference::distinct()->pluck('country',)->toArray();
-        return view('home',compact('client_names','countries','dba_names'));
-
+        return view('home', compact('client_names', 'countries', 'dba_names'));
     }
 
 
@@ -54,15 +54,15 @@ class HomeController extends Controller
             // Fetch client names based on the selected country ID
             $conferenceNames = Conference::where('country', $id)->distinct()->pluck('conference')->toArray();
         }
-        
+
 
         $encodedClientNames = array_map('utf8_encode', $conferenceNames);
         return response()->json(['conferenceNames' => $encodedClientNames]);
-            }
+    }
 
 
-            public function allTopics(Request $request, $id)
-        {
+    public function allTopics(Request $request, $id)
+    {
 
         if ($request->id === 'All') {
             // If 'All' is selected, fetch all client names
@@ -71,13 +71,13 @@ class HomeController extends Controller
             // Fetch client names based on the selected country ID
             $topicNames = Conference::where('conference', $id)->distinct()->pluck('article')->toArray();
         }
-        
+
         $encodedClientNames = array_map('utf8_encode', $topicNames);
         return response()->json(['topicNames' => $encodedClientNames]);
-            }
+    }
 
 
-            
+
 
 
     public function index()
@@ -87,18 +87,19 @@ class HomeController extends Controller
 
         $countries = Conference::distinct()->pluck('country',)->toArray();
         $users = User::all();
-        return view('home',compact('countries','users','conferences'));
-        
+        return view('home', compact('countries', 'users', 'conferences'));
     }
 
-    public function edit(Request $request){
-        $user=Conference::find($request->id);
+    public function edit(Request $request)
+    {
+        $user = Conference::find($request->id);
 
-        return view('edit',compact('user'));
+        return view('edit', compact('user'));
     }
 
 
-    public function update(Request $request){
+    public function update(Request $request)
+    {
 
         // dd($request->id);
 
@@ -107,30 +108,27 @@ class HomeController extends Controller
 
         $currentDateTime = $now->toDateString();
 
-        $user= Conference::find($request->id);
+        $user = Conference::find($request->id);
 
 
         $validator = Validator::make($request->all(), [
-            'name' => 'required', 
+            'name' => 'required',
         ]);
-        if($validator->fails()) {
+        if ($validator->fails()) {
             return redirect()->back()->withErrors($validator);
-        }else{
+        } else {
 
             $user->update([
-                'name'=>$request->name,
-                'conference'=>$request->conference,
-                'article'=>$request->article,
-                'email'=>$request->email,
-                'country'=>$request->country,
-                'updated_at'=>$currentDateTime,
-    
-            ]);
-    
+                'name' => $request->name,
+                'conference' => $request->conference,
+                'article' => $request->article,
+                'email' => $request->email,
+                'country' => $request->country,
+                'updated_at' => $currentDateTime,
 
+            ]);
         }
 
         return redirect()->route('home')->with('success', 'User Updated Successfully.');
-
     }
 }

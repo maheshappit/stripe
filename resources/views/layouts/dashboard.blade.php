@@ -118,7 +118,8 @@ table.dataTable > tbody > tr {
                     }
                 },
 
-                columns: [{
+                columns: [
+                    {
                         title: 'Serial Number',
                         data: 'id',
                         "render": function (data, type, row, meta) {

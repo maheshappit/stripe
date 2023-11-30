@@ -55,13 +55,19 @@ Route::middleware(['checkUserRole'])->group(function () {
 Route::group(['middleware'=>'admin'],function(){
 
     Route::get('admin/users', [AdminController::class, 'users'])->name('admin.users');
-
     Route::any('admin/upload',[AdminController::class,'upload'])->name('admin.upload');
     Route::any('admin/show',[AdminController::class,'show'])->name('admin.show.upload');
     Route::get('admin/conferences',[AdminController::class,'conferences'])->name('admin.show.conferences');
     Route::any('admin/dashboard',[AdminController::class,'dashboard'])->name('admin.dashboard');
     Route::get('admin/show-report', [AdminController::class, 'showReport'])->name('admin.show.report');
     Route::post('/admin/download-report', [AdminController::class, 'downloadReport'])->name('admin.report.download');
+    Route::get('admin/show-users', [AdminController::class, 'AllUsers'])->name('admin.show.allusers');
+    Route::get('admin/conference', [AdminController::class, 'AllUsers']);
+    Route::get('admin/conference/{id}', [AdminController::class, 'UserShow'])->name('admin.conference.show');
+    Route::post('admin/user/update', [AdminController::class, 'userUpdate'])->name('admin.user.update');
+    Route::any('admin/user/delete', [AdminController::class, 'userDelete'])->name('admin.user.delete');
+    Route::any('admin/all-conferences/{id}', [AdminController::class,'allClients'])->name('admin.all.conferences');
+    Route::any('admin/all-articles/{id}', [AdminController::class,'allTopics'])->name('admin.all.articles');
 
 });
 
@@ -69,8 +75,22 @@ Route::group(['middleware'=>'admin'],function(){
 
 Route::group(['middleware'=>'superadmin'],function(){
 
-    Route::get('/superadmin/dashboard',[SuperAdminController::class,'dashboard'])->name('superadmin.dashboard');   
-   
+    Route::get('superadmin/dashboard',[SuperAdminController::class,'dashboard'])->name('superadmin.dashboard');   
+    Route::get('superadmin/conferences',[SuperAdminController::class,'conferences'])->name('superadmin.show.conferences');
+    Route::any('superadmin/show',[SuperAdminController::class,'show'])->name('superadmin.show.upload');
+    Route::get('superadmin/show-report', [SuperAdminController::class, 'showReport'])->name('superadmin.show.report');
+    Route::post('superadmin/create-admin', [SuperAdminController::class, 'createAdmin'])->name('superadmin.create');
+    Route::get('superadmin/users', [SuperAdminController::class, 'users'])->name('superadmin.users');
+    Route::any('superadmin/all-conferences/{id}', [SuperAdminController::class,'allClients'])->name('superadmin.all.conferences');
+    Route::any('superadmin/all-articles/{id}', [SuperAdminController::class,'allTopics'])->name('superadmin.all.articles');
+    Route::any('superadmin/upload',[SuperAdminController::class,'upload'])->name('superadmin.upload');
+    Route::get('superadmin/show-users', [SuperAdminController::class, 'AllUsers'])->name('superadmin.show.allusers');
+    Route::get('superadmin/conference/{id}', [SuperAdminController::class, 'UserShow'])->name('superadmin.conference.show');
+    Route::post('superadmin/user/update', [SuperAdminController::class, 'userUpdate'])->name('superadmin.user.update');
+    Route::any('superadmin/user/delete', [SuperAdminController::class, 'userDelete'])->name('superadmin.user.delete');
+
+    Route::get('superadmin/show-report', [SuperAdminController::class, 'showReport'])->name('superadmin.show.report');
+    Route::post('superadmin/download-report', [SuperAdminController::class, 'downloadReport'])->name('superadmin.report.download');
 });
 
 

@@ -42,6 +42,60 @@ class AdminController extends Controller
         return view('admin.login-form');
     }
 
+    public function UserShow($id)
+    {
+        try {
+            // Your logic to fetch data for a specific ID
+            $data = user::findOrFail($id);
+
+            return response()->json($data);
+        } catch (\Exception $e) {
+            // Handle errors, for example, return an error response
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+
+    public function AllUsers()
+    {
+
+        $all_users = User::paginate(10);
+        return view('admin.all-users', compact('all_users'));
+    }
+
+    public function userUpdate(Request $request)
+    {
+
+        $user = User::findOrFail($request->id);
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->role = $request->role;
+
+        $user->save();
+        return response()->json([
+            'message' => 'User  Updated Successfully',
+            'status_code' => '200'
+
+        ], 200);
+    }
+
+
+    public function userDelete(Request $request)
+    {
+
+
+
+
+        $user = User::findOrFail($request->id);
+
+        $user->delete();
+        return response()->json([
+            'message' => 'User  Deleted Successfully',
+            'status_code' => '200'
+
+        ], 200);
+    }
+
     //todo: admin login functionality
     public function login_functionality(Request $request)
     {
@@ -231,6 +285,36 @@ class AdminController extends Controller
             abort(404);
         }
     }
+    public function allClients(Request $request, $id)
+    {
+
+        if ($request->id === 'All') {
+            // If 'All' is selected, fetch all client names
+            $conferenceNames = Conference::distinct()->pluck('conference')->toArray();
+        } else {
+            // Fetch client names based on the selected country ID
+            $conferenceNames = Conference::where('country', $id)->distinct()->pluck('conference')->toArray();
+        }
+
+
+        $encodedClientNames = array_map('utf8_encode', $conferenceNames);
+        return response()->json(['conferenceNames' => $encodedClientNames]);
+    }
+
+    public function allTopics(Request $request, $id)
+    {
+
+        if ($request->id === 'All') {
+            // If 'All' is selected, fetch all client names
+            $topicNames = Conference::distinct()->pluck('article')->toArray();
+        } else {
+            // Fetch client names based on the selected country ID
+            $topicNames = Conference::where('conference', $id)->distinct()->pluck('article')->toArray();
+        }
+
+        $encodedClientNames = array_map('utf8_encode', $topicNames);
+        return response()->json(['topicNames' => $encodedClientNames]);
+    }
 
 
     public function generateOTP($user)
@@ -271,7 +355,7 @@ class AdminController extends Controller
 
         $countries = Conference::distinct()->pluck('country',)->toArray();
 
-        return view('admin.dashboard', compact('countries'));
+        return view('layouts.admindashboard', compact('countries'));
     }
 
 
@@ -369,6 +453,7 @@ class AdminController extends Controller
         // dd($userID);
         $request->validate([
             'csvFile' => 'required|mimes:csv,txt|max:10000000',
+            'conference' => 'required',
         ]);
 
 
@@ -433,7 +518,7 @@ class AdminController extends Controller
                     'email' => $row['Email'],
                     'article' => $row['Article'],
                     // 'conference' => $row['Conference'],
-                    'conference'=>$request->conference,
+                    'conference' => $request->conference,
                     'country' => $row['Country'],
                     'user_id' => $request->user()->id,
 

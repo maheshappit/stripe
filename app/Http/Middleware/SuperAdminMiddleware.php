@@ -21,5 +21,5 @@ class SuperAdminMiddleware
             return $next($request);
         }
 
-        return redirect('/')->with('error', 'Unauthorized access');    }
+        return redirect('/login')->with('error', 'Unauthorized access');    }
 }

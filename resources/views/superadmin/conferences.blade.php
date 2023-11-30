@@ -1,70 +1,64 @@
-@extends('layouts.admindashboard')
+
+@extends('layouts.superadmindashboard')
 
 @section('dashboard-content')
 
-
 <head>
 
-               <script>
-                    $(document).ready(function() {
-                        $('.country').select2();
-                        $('.conference').select2();
-                        $('.db').select2();
-                        $('.technology').select2();
-                        $('.speciality').select2();
-                        $('.article').select2();
-                        $('.user').select2();
-                        
+    <script>
+        $(document).ready(function() {
+            $('.country').select2();
+            $('.conference').select2();
+            $('.db').select2();
+            $('.technology').select2();
+            $('.speciality').select2();
+            $('.article').select2();
+            $('.user').select2();
+
+        });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            $('#conference').on('change', function() {
+                var selectedCountryId = $(this).val();
+                var selectedCountryName = $(this).find('option:selected').text();
+                console.log(selectedCountryId);
+                if (selectedCountryId !== 'all_countries') {
+                    // Generate the URL using the Laravel route helper
+                    var url = "{{ route('superadmin.all.articles', ['id' => 'id']) }}";
+                    url = url.replace('id', selectedCountryName);
+                    // Make an AJAX request to the generated URL
+                    $.ajax({
+                        url: url,
+                        type: 'GET',
+                        dataType: 'json', // Expect JSON response
+                        success: function(data) {
+                            console.log(data.topicNames);
+                            // Update the result div with the received client names
+                            $('#article').html(displayClientNames(data.topicNames));
+                        },
+                        error: function(error) {
+                            // Handle errors if necessary
+                            console.log(error);
+                        }
                     });
-                </script>
+                } else {
+                    // Handle the case when 'All' is selected
+                    $('#article').html('');
+                }
+            });
 
-<script>
-    $(document).ready(function () {
-        $('#conference').on('change', function () {
-            var selectedCountryId = $(this).val();
-            var selectedCountryName = $(this).find('option:selected').text();
-
-            console.log(selectedCountryId);
-
-
-
-            if (selectedCountryId !== 'all_countries') {
-                // Generate the URL using the Laravel route helper
-                var url = "{{ route('admin.all.articles', ['id' => 'id']) }}";
-                url = url.replace('id', selectedCountryName);
-
-                // Make an AJAX request to the generated URL
-                $.ajax({
-                    url: url,
-                    type: 'GET',
-                    dataType: 'json', // Expect JSON response
-                    success: function (data) {
-
-                        console.log(data.topicNames);
-                        // Update the result div with the received client names
-                        $('#article').html(displayClientNames(data.topicNames));
-                    },
-                    error: function (error) {
-                        // Handle errors if necessary
-                        console.log(error);
-                    }
+            function displayClientNames(topicNames) {
+                var html = '<h2>Client Names:</h2><select><option value="All">All</option>';
+                $.each(topicNames, function(index, clientName) {
+                    html += '<option>' + clientName + '</option>';
                 });
-            } else {
-                // Handle the case when 'All' is selected
-                $('#article').html('');
+                html += '</select>';
+                return html;
             }
         });
-
-        function displayClientNames(topicNames) {
-            var html = '<h2>Client Names:</h2><select><option value="All">All</option>';
-            $.each(topicNames, function (index, clientName) {
-                html += '<option>' + clientName + '</option>';
-            });
-            html += '</select>';
-            return html;
-        }
-    });
-</script>
+    </script>
 
 
 
@@ -72,9 +66,9 @@
 </head>
 
 @if(session('success'))
-    <div class="alert alert-success">
-        {{ session('success') }}
-    </div>
+<div class="alert alert-success">
+    {{ session('success') }}
+</div>
 @endif
 <div class="item">
     <div class="input-group mb-3">
@@ -154,17 +148,17 @@
 
             <div>
                 <div>
-                <button id="search-btn" class="btn-sm btn-primary">Search</button>
+                    <button id="search-btn" class="btn-sm btn-primary">Search</button>
 
                 </div>
 
 
-</div>
+            </div>
 
 
 
 
-         
+
 
         </div>
 
@@ -173,9 +167,6 @@
 
 
 
-       
-
-       
 
 
 
@@ -184,7 +175,10 @@
 
 
 
-        
+
+
+
+
 
 
         <!-- <button class="btn btn-warning" onclick="resetSelect()" type="button">Reset</button> -->
@@ -197,7 +191,7 @@
 
 <div class="item">
     <table id="dtHorizontalExample" class="table">
-       
+
     </table>
 
 

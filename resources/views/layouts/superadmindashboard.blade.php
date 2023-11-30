@@ -1,4 +1,3 @@
-@extends('layouts.add_admins')
 <head>
 <meta name="csrf-token" content="{{ csrf_token() }}">
     <script src="https://kit.fontawesome.com/b99e675b6e.js"></script>
@@ -89,7 +88,7 @@ table.dataTable > tbody > tr {
                 autoWidth: false,
                 recordsTotal: 50,
                 ajax: {
-                    url: "{{ route('users') }}",
+                    url: "{{ route('superadmin.users') }}",
                     data: function(d) {
 
                         d.db = $('#db').val();
@@ -119,9 +118,14 @@ table.dataTable > tbody > tr {
                     }
                 },
 
-                columns: [{
+                columns: [
+                    {
                         title: 'Serial Number',
-                        data: 'id'
+                        data: 'id',
+                        "render": function (data, type, row, meta) {
+                    // 'meta.row' is the row index, 'meta.settings._iDisplayStart' is the page start index
+                    return meta.row + meta.settings._iDisplayStart + 1;
+                }
                     },
 
                     {
@@ -349,7 +353,7 @@ table.dataTable > tbody > tr {
                 $('#country').change();
 
 
-                var url = "{{ route('all-conferences', ['id' => 'id']) }}";
+                var url = "{{ route('superadmin.all.conferences', ['id' => 'id']) }}";
                 url = url.replace('id', my);
 
                 // Make an AJAX request to retrieve conference names based on the selected country
@@ -573,7 +577,7 @@ table.dataTable > tbody > tr {
                     </li>
 
                     <li>
-                        <a href="{{route('superadmin.show.upload')}}" class="{{ ((Request::is('show-upload-form')) ? 'active' : ' ') }}">
+                        <a href="{{route('superadmin.show.upload')}}" class="{{ ((Request::is('superadmin/show')) ? 'active' : ' ') }}">
                             <span class="icon"><i class="fab fa-delicious"></i></span>
                             <span class="title">Upload</span>
                         </a>
@@ -583,6 +587,13 @@ table.dataTable > tbody > tr {
                         <a href="{{route('superadmin.show.report')}}" class="{{ ((Request::is('show-report')) ? 'active' : ' ') }}">
                             <span class="icon"><i class="fas fa-chart-pie"></i></span>
                             <span class="title">Reports</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{{route('superadmin.show.allusers')}}" class="{{ ((Request::is('superadmin/show-allusers')) ? 'active' : ' ') }}">
+                            <span class="icon"><i class="fas fa-chart-pie"></i></span>
+                            <span class="title">All Users</span>
                         </a>
                     </li>
 

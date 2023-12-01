@@ -75,6 +75,11 @@
                 data: formData,
                 success: function(response) {
                     toastr.success(response.message);
+                    $('#name').val('');
+                    $('#email').val('');
+                    $('#role').val('');
+
+
                 },
                 error: function(xhr, status, error) {
 
@@ -179,8 +184,7 @@ handleValidationErrors(errors);
                             </div>
 
                            
-                          
-
+                        
                             <div class="row mb-0">
                                 <div class="col-md-6 offset-md-4">
                                 <button type="button" class="btn btn-primary" id="submitButton">Submit</button>

@@ -351,13 +351,54 @@ class AdminController extends Controller
         return $verification;
     }
 
+
+    public function createUser(Request $request)
+    {
+
+
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|max:255',
+
+            ],
+
+        );
+
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        } else {
+
+                $user = User::where('email', $request->email)->first();
+                if ($user) {
+
+                    return response()->json(['errors' => [['Email Already Exists']]], 422);
+                } else {
+
+                    User::create([
+
+                        'name' => $request->name,
+                        'email' => $request->email,
+                        'role' => "user",
+                        'password' => '',
+
+                    ]);
+                }
+
+                return response()->json(['message' => 'User  Created successfully']);
+            
+        }
+    }
+
     public function dashboard()
     {
         $users_data = Conference::latest()->paginate(10);
 
         $countries = Conference::distinct()->pluck('country',)->toArray();
 
-        return view('layouts.admindashboard', compact('countries'));
+        return view('admin.dashboard', compact('countries'));
     }
 
 

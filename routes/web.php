@@ -69,6 +69,9 @@ Route::group(['middleware'=>'admin'],function(){
     Route::any('admin/all-conferences/{id}', [AdminController::class,'allClients'])->name('admin.all.conferences');
     Route::any('admin/all-articles/{id}', [AdminController::class,'allTopics'])->name('admin.all.articles');
 
+
+    Route::post('admin/user/create', [AdminController::class,'createUser'])->name('admin.user.create');
+
 });
 
 

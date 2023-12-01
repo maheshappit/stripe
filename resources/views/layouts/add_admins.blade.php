@@ -79,7 +79,6 @@
                     $('#email').val('');
                     $('#role').val('');
 
-
                 },
                 error: function(xhr, status, error) {
 

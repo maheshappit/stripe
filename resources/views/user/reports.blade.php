@@ -3,6 +3,7 @@
 @section('dashboard-content')
 
 <head>
+    
 
     <style>
         .form-row {
@@ -27,10 +28,10 @@
     $(document).ready(function() {
         // Initialize DataTable with buttons
         var table = $('#dataTable').DataTable({
-            dom: 'Bfrtip',
-            buttons: [
-                'copy', 'csv', 'excel', 'pdf', 'print'
-            ]
+            dom: 'lBfrtip',
+                buttons: [
+                    'excel'
+                ],
         });
 
         $('#clear').click(function(e){
@@ -85,9 +86,6 @@ console.log(from_date);
                     table.clear().draw();
 
                    
-
-
-
                     // Populate the table with the new data
                     $.each(response.data, function(index, item) {
                         var createdAt = new Date(item.created_at);
@@ -207,6 +205,33 @@ console.log(from_date);
 </div>
 
 <div class="item">
+<table class="table">
+    <thead>
+
+        <tr>
+            <th>Toal Users Count</th>
+            <th>Total Inserted Count:</th>
+            <th>Toal Updated Count:</th>
+            <th>Total Downloaded Count</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+                <td>{{$users_count ?? ''}}</td>
+                <td>{{$inserted_count ?? ''}}</td>
+                <td>{{$updated_count ?? ''}}</td>
+                <td>{{$download_count ?? ''}}</td>
+
+        </tr>
+
+    </tbody>
+</table>
+
+</div>
+
+<div class="item">
+
+
     <table id="dataTable" class="table table-striped">
         <!-- Table headers go here -->
         <thead>

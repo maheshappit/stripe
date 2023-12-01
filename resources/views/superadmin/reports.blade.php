@@ -207,6 +207,31 @@ console.log(from_date);
 </div>
 
 <div class="item">
+<table class="table">
+    <thead>
+
+        <tr>
+            <th>Toal Users Count</th>
+            <th>Total Inserted Count:</th>
+            <th>Toal Updated Count:</th>
+            <th>Total Downloaded Count</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+                <td>{{$users_count ?? ''}}</td>
+                <td>{{$inserted_count ?? ''}}</td>
+                <td>{{$updated_count ?? ''}}</td>
+                <td>{{$download_count ?? ''}}</td>
+
+        </tr>
+
+    </tbody>
+</table>
+
+</div>
+
+<div class="item">
     <table id="dataTable" class="table table-striped">
         <!-- Table headers go here -->
         <thead>

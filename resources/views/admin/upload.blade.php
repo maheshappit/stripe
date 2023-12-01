@@ -6,7 +6,7 @@
 
     <form id="uploadForm" enctype="multipart/form-data">
         @csrf
-        <select name="conference">
+        <select class="custom-select" name="conference">
     @foreach($conferences as $code )
     <option   value="{{ $code->name}}">{{ $code->name}}</option>
     @endforeach

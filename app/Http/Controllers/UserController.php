@@ -224,26 +224,24 @@ class UserController extends Controller
     }
     public function showReport()
     {
-
-
         $all_users = User::all();
-        return view('user.reports', compact('all_users'));
+        $users_count=User::where('role','user')->get()->count();
+        $inserted_count = Conference::whereNotNull('user_created_at')->count();
+        $updated_count = Conference::whereNotNull('user_updated_at')->count();
+        $download_count = Conference::whereNotNull('download_count')->count();
+        return view('user.reports', compact('all_users','users_count','inserted_count','updated_count','download_count'));
     }
 
     public function downloadReport(Request $request)
     {
 
-        // dd($request->all())
 
         $all_users = User::all();
-
-
         $f_date = Carbon::parse($request->from_date);
         $startDate = $f_date->format('Y-m-d');
         // dd($startDate);
         $t_date = Carbon::parse($request->to_date);
         $endDate = $t_date->format('Y-m-d');
-
         $request->validate([
             'from_date' => 'required',
             'to_date' => 'required',

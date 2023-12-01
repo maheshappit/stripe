@@ -36,11 +36,12 @@ class SuperAdminController extends Controller
 
     public function showReport()
     {
-
-
         $all_users = User::all();
-        return view('superadmin.reports', compact('all_users'));
-    }
+        $users_count=User::where('role','user')->get()->count();
+        $inserted_count = Conference::whereNotNull('user_created_at')->count();
+        $updated_count = Conference::whereNotNull('user_updated_at')->count();
+        $download_count = Conference::whereNotNull('download_count')->count();
+        return view('superadmin.reports', compact('all_users','users_count','inserted_count','updated_count','download_count'));    }
     public function upload(Request $request)
     {
 

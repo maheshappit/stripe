@@ -60,6 +60,35 @@ class HomeController extends Controller
         return response()->json(['conferenceNames' => $encodedClientNames]);
     }
 
+    public function sentEmail(Request $request){
+        
+
+       $whole_data= $request->selectedData;
+        if(!empty($request->selectedData)){
+            foreach($whole_data as $email){
+
+                if(isset($email['email'])){
+
+                    $original_email=$email['email'];
+                    $conference=Conference::where('email',$original_email)->where('conference', 'LIKE', '%' . $request->conference . '%')->first();
+                    if($conference){
+                        $conference->email_sent_status='sent';
+                        $conference->save();
+                    }
+
+        
+
+                }
+            }
+
+            return response()->json([
+                'message' => 'Email  Status Changed Successfully',
+                'status_code'=>'200'
+                
+            ],200);
+        }
+    }
+
 
     public function allTopics(Request $request, $id)
     {

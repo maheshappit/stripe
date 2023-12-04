@@ -1,5 +1,5 @@
 <head>
-<meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <script src="https://kit.fontawesome.com/b99e675b6e.js"></script>
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
@@ -11,54 +11,33 @@
 
 
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
-
-
     <!-- //bootstap css cdn -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <!-- Demo CSS -->
 
+    //new links
+
+
+    <head>
+    <!-- Include necessary libraries -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/select/1.3.4/css/select.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/select/1.3.4/js/dataTables.select.min.js"></script>
+</head>
 
-    <link href="https://cdn.datatables.net/v/bs5/jqc-1.12.4/jszip-3.10.1/dt-1.13.6/b-2.4.2/b-colvis-2.4.2/b-html5-2.4.2/b-print-2.4.2/fh-3.4.0/r-2.5.0/sc-2.2.0/sb-1.6.0/datatables.css" rel="stylesheet">
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
-    <script src="https://cdn.datatables.net/v/bs5/jqc-1.12.4/jszip-3.10.1/dt-1.13.6/b-2.4.2/b-colvis-2.4.2/b-html5-2.4.2/b-print-2.4.2/fh-3.4.0/r-2.5.0/sc-2.2.0/sb-1.6.0/datatables.js"></script>
-
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
-
-
-    <style>
-
-table.dataTable > tbody > tr {
-    /* display: inline-block; */
-    white-space: nowrap; /* Prevent line breaks within the row */
-    margin-right: 10px;
-    height: fit-content; /* Add spacing between rows if necessary */
-}
     
-.toast-message{
-            color:black
+    <style>
+        table.dataTable>tbody>tr {
+            /* display: inline-block; */
+            white-space: nowrap;
+            /* Prevent line breaks within the row */
+            margin-right: 10px;
+            height: fit-content;
+            /* Add spacing between rows if necessary */
         }
-
-</style>
-
-
-<script>
-    $(document).ready(function(){
-      $("#toggleCheckbox").change(function(){
-        if(this.checked){
-          $("#hiddenButton").show();
-        } else {
-          $("#hiddenButton").hide();
-        }
-      });
-    });
-  </script>
+    </style>
 
 
     <script>
@@ -83,12 +62,10 @@ table.dataTable > tbody > tr {
             myTable = $('#dtHorizontalExample').DataTable({
                 "scrollX": true,
 
-                
                 "select": {
             style: 'multi',
             selector: 'td:first-child input[type="checkbox"]'
         },
-
 
 
                 "columnDefs": [{
@@ -104,12 +81,11 @@ table.dataTable > tbody > tr {
                 }],
 
 
+
                 dom: 'lBfrtip',
                 buttons: [
-        'excel',
-        'selectNone'
-    ],
-    
+                    'excel'
+                ],
                 // 'responsive': true,
 
                 processing: true,
@@ -124,12 +100,12 @@ table.dataTable > tbody > tr {
                         d.search = $('#search').val();
                         d.conference = $('#conference').val();
                         d.country = $('#country').val();
-                       d.article=$('#article').val();
-                       d.user=$('#user').val();
-                       d.user_created_at=$('#user_created_at').val();
-                       d.user_updated_at=$('#user_updated_at').val();
+                        d.article = $('#article').val();
+                        d.user = $('#user').val();
+                        d.user_created_at = $('#user_created_at').val();
+                        d.user_updated_at = $('#user_updated_at').val();
 
-                       
+
 
 
                         var conference_id = $('#conference').val();
@@ -148,35 +124,36 @@ table.dataTable > tbody > tr {
                 },
 
                 columns: [
-
+                    
                     {
                 title: '', // Empty title for the checkbox column
                 data: null,
                 orderable: false,
                 searchable: false,
                 defaultContent: '<input type="checkbox" class="checkbox"/>'
-            },
-                    {
+            },{
+
+                    
                         title: 'Serial Number',
                         data: 'id',
-                        "render": function (data, type, row, meta) {
-                    // 'meta.row' is the row index, 'meta.settings._iDisplayStart' is the page start index
-                    return meta.row + meta.settings._iDisplayStart + 1;
-                }
+                        "render": function(data, type, row, meta) {
+                            // 'meta.row' is the row index, 'meta.settings._iDisplayStart' is the page start index
+                            return meta.row + meta.settings._iDisplayStart + 1;
+                        }
                     },
 
                     {
-                        title:'Name',
-                        data:'name'
+                        title: 'Name',
+                        data: 'name'
 
                     },
                     {
-                        title:'Email',
-                        data:'email'
+                        title: 'Email',
+                        data: 'email'
 
                     },
-                    
-                    
+
+
                     {
                         title: 'Country',
                         data: 'country'
@@ -184,35 +161,35 @@ table.dataTable > tbody > tr {
                     },
 
                     {
-                        title:'Article',
-                        data:'article'
+                        title: 'Article',
+                        data: 'article'
 
-                    },{
-                        title:'Conference',
-                        data:'conference'
-
-                    },
-                    {
-                        title:'Posted By',
-                        data:'posted_by'
-                        
-                    },
-                    {
-                        title:'Created Date',
-                        data:'user_created_at'
+                    }, {
+                        title: 'Conference',
+                        data: 'conference'
 
                     },
                     {
-                        title:'Updated Date',
-                        data:'user_updated_at'
-                    },
-                    
+                        title: 'Posted By',
+                        data: 'posted_by'
 
-                   
-                    
-            
+                    },
                     {
-                        title:'Action',
+                        title: 'Created Date',
+                        data: 'user_created_at'
+
+                    },
+                    {
+                        title: 'Updated Date',
+                        data: 'user_updated_at'
+                    },
+
+
+
+
+
+                    {
+                        title: 'Action',
 
                         mData: '',
                         render: (data, type, row) => {
@@ -241,24 +218,25 @@ table.dataTable > tbody > tr {
                     return row['email'];
                 });
 
-                
+
                 var csrfToken = $('meta[name="csrf-token"]').attr('content');
 
                 $.ajax({
-        url: '{{route('download.email')}}',
-        method: 'POST', // or 'GET' depending on your server-side implementation
-        data: {
-            _token: csrfToken, // Include the CSRF token in your data
-            emails: emails
-        },        success: function(response) {
-            // Handle the success response
-            console.log(response);
-        },
-        error: function(error) {
-            // Handle the error
-            console.error(error);
-        }
-    });
+                    url: '{{route('download.email')}}',
+                    method: 'POST', // or 'GET' depending on your server-side implementation
+                    data: {
+                        _token: csrfToken, // Include the CSRF token in your data
+                        emails: emails
+                    },
+                    success: function(response) {
+                        // Handle the success response
+                        console.log(response);
+                    },
+                    error: function(error) {
+                        // Handle the error
+                        console.error(error);
+                    }
+                });
 
 
 
@@ -266,7 +244,7 @@ table.dataTable > tbody > tr {
 
 
 
-            myTable.buttons().disable();
+            // myTable.buttons().disable();
 
 
 
@@ -288,6 +266,23 @@ table.dataTable > tbody > tr {
                 //         });
                 // }
             });
+
+            $('#select-all-checkbox').on('change', function() {
+        var isChecked = $(this).prop('checked');
+        $('.checkbox').prop('checked', this.checked);
+
+
+
+        myTable.rows().select(isChecked);
+    });
+
+    $('#dtHorizontalExample tbody').on('change', '.checkbox', function() {
+        // Uncheck "Select All" if any individual checkbox is unchecked
+        if (!this.checked) {
+            $('#select-all-checkbox').prop('checked', false);
+        }
+    });
+
 
 
             $('#dtHorizontalExample').on('click', '.show-more', function() {
@@ -311,93 +306,18 @@ table.dataTable > tbody > tr {
             });
 
             $('#search-btn').on('click', function(e) {
-
-                var selectedCountryId=$('#conference').val();
-
-
-                if(selectedCountryId === 'All'){
-                $('#toggleCheckbox').prop('disabled', true);
-
-                $("#hiddenButton").hide();
-
-            }else{
-                $('#toggleCheckbox').prop('disabled', false);
-
-            }
-
-                console.log(name);
-
                 e.preventDefault(); // Prevent the default form submission behavior
                 myTable.ajax.reload();
             });
 
-
-            $('#myTable').on('length.dt', function (e, settings, len) {
-      // Log the selected number of entries to the console
-      console.log('Show entries changed to:', len);
-    });
-
-        $('#toggleCheckbox').on('change', function() {
-
-        var isChecked = $(this).prop('checked');
-            myTable.buttons().enable();
-
-        $('.checkbox').prop('checked', this.checked);
-
-       
-    });
-
-    $('#dtHorizontalExample tbody').on('change', '.checkbox', function() {
-        // Uncheck "Select All" if any individual checkbox is unchecked
-        if (!this.checked) {
-            $('#toggleCheckbox').prop('checked', false);
-        }
-    });
-
+           
 
             $('#searchButton').on('click', function(e) {
                 e.preventDefault(); // Prevent the default form submission behavior
 
                 myTable.ajax.reload();
 
-              
-
             });
-
-            $('#hiddenButton').on('click', function() {
-                var selectedData = myTable.rows({ selected: true }).data().toArray();
-                console.log(selectedData);
-
-                var conference_id =  $('#conference').val();
-
-                var routeUrl = "{{ route('user.sent.emails') }}"; // Replace 'your.route' with the actual route name
-
-                var csrfToken = $('meta[name="csrf-token"]').attr('content');
-
-                   $.ajax({
-                    type: 'POST',
-                    url: routeUrl, 
-                    headers: {
-          'X-CSRF-TOKEN': csrfToken
-        },                    data: {
-                    selectedData: selectedData,
-                    conference:conference_id,
-
-
-                    },
-                    success: function(response) {
-                    // Handle the response from the controller if needed
-
-                    if (response.status_code == '200') {
-                            toastr.success(response.message);
-                    }   
-
-                },
-                    error: function(error) {
-                    console.log('Error:', error);
-                    }
-                     });
-                        });
 
 
 
@@ -456,6 +376,8 @@ table.dataTable > tbody > tr {
 
             // Set the default value in the dropdown
             var my = $('#country').val();
+
+
 
             if (typeof my !== 'undefined') {
 
@@ -557,56 +479,6 @@ table.dataTable > tbody > tr {
 
 
         });
-
-
-        $(document).ready(function () {
-        $('#conference').on('change', function () {
-
-
-
-            var selectedCountryId = $(this).val();
-            var selectedCountryName = $(this).find('option:selected').text();
-
-            console.log(selectedCountryId);
-
-
-
-            if (selectedCountryId !== 'all_countries') {
-                // Generate the URL using the Laravel route helper
-                var url = "{{ route('all-articles', ['id' => 'id']) }}";
-                url = url.replace('id', selectedCountryName);
-
-                // Make an AJAX request to the generated URL
-                $.ajax({
-                    url: url,
-                    type: 'GET',
-                    dataType: 'json', // Expect JSON response
-                    success: function (data) {
-
-                        console.log(data.topicNames);
-                        // Update the result div with the received client names
-                        $('#article').html(displayClientNames(data.topicNames));
-                    },
-                    error: function (error) {
-                        // Handle errors if necessary
-                        console.log(error);
-                    }
-                });
-            } else {
-                // Handle the case when 'All' is selected
-                $('#article').html('');
-            }
-        });
-
-        function displayClientNames(topicNames) {
-            var html = '<h2>Client Names:</h2><select><option value="All">All</option>';
-            $.each(topicNames, function (index, clientName) {
-                html += '<option>' + clientName + '</option>';
-            });
-            html += '</select>';
-            return html;
-        }
-    });
     </script>
 
     <style>
@@ -718,16 +590,16 @@ table.dataTable > tbody > tr {
                 <ul>
 
 
-                <li>
+                    <li>
                         <a href="{{ route('home') }}" class="{{ ((Request::is('home')) ? 'active' : ' ') }}">
                             <span class="icon"><i class="fas fa-dice-d6"></i></span>
                             <span class="title">Home</span>
                         </a>
 
-                </li>
+                    </li>
 
-             
-              
+
+
                     <li>
                         <a href="{{ route('show.conferences') }}" class="{{ ((Request::is('show.conferences')) ? 'active' : ' ') }}">
 
@@ -744,7 +616,7 @@ table.dataTable > tbody > tr {
                             <span class="title">Upload</span>
                         </a>
                     </li>
-                 
+
                     <li>
                         <a href="{{route('show.report')}}" class="{{ ((Request::is('show-report')) ? 'active' : ' ') }}">
                             <span class="icon"><i class="fas fa-chart-pie"></i></span>

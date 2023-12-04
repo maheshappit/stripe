@@ -5,6 +5,12 @@
 
 <head>
 
+<style>
+    .hidden {
+      display: none;
+    }
+  </style>
+
                <script>
                     $(document).ready(function() {
                         $('.country').select2();
@@ -18,58 +24,19 @@
                     });
                 </script>
 
-<script>
-    $(document).ready(function () {
-        $('#conference').on('change', function () {
-            var selectedCountryId = $(this).val();
-            var selectedCountryName = $(this).find('option:selected').text();
-
-            console.log(selectedCountryId);
 
 
 
-            if (selectedCountryId !== 'all_countries') {
-                // Generate the URL using the Laravel route helper
-                var url = "{{ route('all-articles', ['id' => 'id']) }}";
-                url = url.replace('id', selectedCountryName);
-
-                // Make an AJAX request to the generated URL
-                $.ajax({
-                    url: url,
-                    type: 'GET',
-                    dataType: 'json', // Expect JSON response
-                    success: function (data) {
-
-                        console.log(data.topicNames);
-                        // Update the result div with the received client names
-                        $('#article').html(displayClientNames(data.topicNames));
-                    },
-                    error: function (error) {
-                        // Handle errors if necessary
-                        console.log(error);
-                    }
-                });
-            } else {
-                // Handle the case when 'All' is selected
-                $('#article').html('');
-            }
-        });
-
-        function displayClientNames(topicNames) {
-            var html = '<h2>Client Names:</h2><select><option value="All">All</option>';
-            $.each(topicNames, function (index, clientName) {
-                html += '<option>' + clientName + '</option>';
-            });
-            html += '</select>';
-            return html;
-        }
-    });
-</script>
 
 
 
 
 </head>
+
+
+<script>
+   
+</script>
 
 @if(session('success'))
     <div class="alert alert-success">
@@ -197,6 +164,8 @@
 </div>
 
 <div class="item">
+<input type="checkbox" id="toggleCheckbox" disabled> Select All
+<button id="hiddenButton" class="btn btn-success" style="display: none;">Sent Email</button>
     <table id="dtHorizontalExample" class="table">
        
     </table>

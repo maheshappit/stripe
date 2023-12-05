@@ -328,9 +328,16 @@ function handleValidationErrors(errors) {
             </form>
         </div>
 
-        <!-- Close "x" mark -->
     </div>
 </div>
+
+
+
+@if(session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif
 
 
 <!-- Modal 2 -->

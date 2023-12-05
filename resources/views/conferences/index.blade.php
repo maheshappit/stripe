@@ -16,6 +16,7 @@
                         $('.country').select2();
                         $('.conference').select2();
                         $('.article').select2();
+                        $('.email_status').select2();
                         $('.user_created_at').input();
 
                         
@@ -120,10 +121,18 @@
             </div>
 
             <div>
+                <label for="country">Email Status:</label>
+                <select name="email_status" id="email_status">
+                <option value="All">All</option>
+                <option value="pending">Pending</option>
+                <option value="sent">Sent</option>
+
+                </select>
+            </div>
+
+            <div>
                 <div>
                 <button id="search-btn" class="btn-sm btn-primary">Search</button>
-
-                
                 </div>
 
 

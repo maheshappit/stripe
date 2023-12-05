@@ -128,6 +128,8 @@ table.dataTable > tbody > tr {
                        d.user=$('#user').val();
                        d.user_created_at=$('#user_created_at').val();
                        d.user_updated_at=$('#user_updated_at').val();
+                       d.email_status=$('#email_status').val();
+
 
                        
 
@@ -175,6 +177,20 @@ table.dataTable > tbody > tr {
                         data:'email'
 
                     },
+
+
+                    {
+                        title:'Email Status',
+                        data:'email_sent_status'
+
+                    },
+
+                    {
+                        title:'Email Sent Date',
+                        data:'email_sent_date'
+
+                    },
+                    
                     
                     
                     {

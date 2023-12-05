@@ -25,11 +25,11 @@ class UserController extends Controller
         $query = Conference::query();
 
         if ($request->search) {
-            $query->where('country', 'like', '%' . $request->search . '%');
+            $query->where('email', 'like', '%' . $request->search . '%');
                 
 
         } else {
-            $query->whereNotNull('country')->orderBy('created_at', 'desc');
+            $query->whereNotNull('email')->orderBy('created_at', 'desc');
         }
 
 
@@ -69,13 +69,26 @@ class UserController extends Controller
 
 
         //for all country,conference,articles,users,created,updated dates
-        if ($request->country == 'All' && $request->conference == 'All' && $request->article == 'All' && $request->user == 'All' && $request->user_created_at  == '' && $request->user_updated_at == '') {
+
+
+        if ($request->country == 'All' && $request->conference == 'All' && $request->article == 'All' && $request->user == 'All' && $request->email_status != 'All' && $request->user_created_at  == '' && $request->user_updated_at == '') {
+            $query->where('email_sent_status',$request->email_status);
+        }
+
+
+        if ($request->country == 'All' && $request->conference == 'All' && $request->article == 'All' && $request->user == 'All' && $request->email_status != 'All' && $request->user_created_at  == '' && $request->user_updated_at == '') {
+            $query->where('email_sent_status',$request->email_status)->where('conference',$request->conference);
+        }
+
+
+
+        if ($request->country == 'All' && $request->conference == 'All' && $request->article == 'All' && $request->user == 'All' && $request->email_status == 'All' && $request->user_created_at  == '' && $request->user_updated_at == '') {
             $query->whereNotNull('country')->whereNotNull('conference')->whereNotNull('article')->whereNotNull('user_id');
         }
 
 
           //for all country,articles,users,created,updated dates and particular conference
-          if ($request->country == 'All' && $request->conference == 'All' && $request->article == 'All' && $request->user == 'All' && $request->user_created_at  != '' && $request->user_updated_at == null) {
+          if ($request->country == 'All' && $request->conference == 'All' && $request->article == 'All' && $request->user == 'All' && $request->user_created_at  != '' && $request->user_updated_at == null && $request->email_status == 'All') {
 
             // dd($request->user_created_at);
             $query->where('user_created_at',$request->user_created_at);

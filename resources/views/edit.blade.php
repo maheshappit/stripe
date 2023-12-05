@@ -55,6 +55,32 @@
 
 
                         <div class="row mb-3">
+                            <label for="country" class="col-md-4 col-form-label text-md-end">{{ __('Client Status') }}</label>
+
+                            <div class="col-md-6">
+
+                            <select class="custom-select"   name="client_status">
+
+
+                            <option value="">--select--</option>
+                            <option value="positive">Positive</option>
+                            <option value="negative">Negative</option>
+                            <option value="un subscribed">Un Subscribed</option>
+
+
+
+                            </select>
+
+                                @error('country')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+
+
+                        <div class="row mb-3">
                             <label for="conference" class="col-md-4 col-form-label text-md-end">{{ __('Conference') }}</label>
 
                             <div class="col-md-6">

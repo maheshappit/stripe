@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use app\Models\User;
 
 
+
 use Illuminate\Support\Carbon;
 
 
@@ -61,9 +62,17 @@ class HomeController extends Controller
     }
 
     public function sentEmail(Request $request){
+
+
+        $now = Carbon::now();
+
+
+        $currentDateTime = $now->toDateString();
         
 
        $whole_data= $request->selectedData;
+
+    //    dd($whole_data);
         if(!empty($request->selectedData)){
             foreach($whole_data as $email){
 
@@ -73,6 +82,7 @@ class HomeController extends Controller
                     $conference=Conference::where('email',$original_email)->where('conference', 'LIKE', '%' . $request->conference . '%')->first();
                     if($conference){
                         $conference->email_sent_status='sent';
+                        $conference->email_sent_date=$currentDateTime;
                         $conference->save();
                     }
 
@@ -154,7 +164,7 @@ class HomeController extends Controller
                 'email' => $request->email,
                 'country' => $request->country,
                 'updated_at' => $currentDateTime,
-
+                'client_status'=>$request->client_status,
             ]);
         }
 

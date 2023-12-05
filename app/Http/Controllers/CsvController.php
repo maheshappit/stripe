@@ -86,10 +86,9 @@ class CsvController extends Controller
                     // 'email' => $row['Email'],
                     // 'article' => $row['Article'],
                     // 'conference' => $row['Conference'],
+                    'email_sent_status'=>'pending',
                     'country' => $row['Country'],
-
                     'user_id' => $request->user()->id,
-
                     'user_updated_at' => $currentDateTime,
                     // 'updated_at'=>'',
                 ]);
@@ -106,8 +105,9 @@ class CsvController extends Controller
                     'conference'=>$request->conference,
                     'country' => $row['Country'],
                     'user_id' => $request->user()->id,
-
                     'user_created_at' => $currentDateTime,
+                    'email_sent_status'=>'pending',
+                    'email_sent_date'=>'',
                     // 'updated_at'=>'',
 
                 ]);

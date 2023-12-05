@@ -77,6 +77,7 @@ class ConferenceController extends Controller
                     'conference'=>$request->conference,
                     'country'=>$request->country,
                     'user_id'=>$request->user()->id,
+                    'email_sent_status'=>'pending',
                     'user_created_at'=>$currentDateTime,                
                 ]);
     

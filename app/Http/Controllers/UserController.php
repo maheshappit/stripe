@@ -24,17 +24,15 @@ class UserController extends Controller
 
         $query = Conference::query();
 
-        if ($request->search) {
+        if (isset($request->search)) {
             $query->where('email', 'like', '%' . $request->search . '%');
                 
-
-        } else {
-            $query->whereNotNull('email')->orderBy('created_at', 'desc');
-        }
+        } 
 
 
-        
+        else{
 
+            
         if ($request->country == 'All') {
 
             $query->whereNotNull('country')->orderBy('created_at', 'desc');
@@ -76,8 +74,8 @@ class UserController extends Controller
         }
 
 
-        if ($request->country == 'All' && $request->conference == 'All' && $request->article == 'All' && $request->user == 'All' && $request->email_status != 'All' && $request->user_created_at  == '' && $request->user_updated_at == '') {
-            $query->where('email_sent_status',$request->email_status)->where('conference',$request->conference);
+        if ($request->country == 'All' && $request->conference != 'All' && $request->article == 'All' && $request->user == 'All' && $request->email_status != 'All' && $request->user_created_at  == '' && $request->user_updated_at == '') {
+            $query->where('email_sent_status',$request->email_status)->where('conference',$request->conference)->where('email_sent_status',$request->email_status);
         }
 
 
@@ -224,6 +222,11 @@ class UserController extends Controller
 
 
       
+
+
+        }
+
+        
 
 
 

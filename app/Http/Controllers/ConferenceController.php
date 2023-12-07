@@ -10,6 +10,7 @@ use App\Models\Conference;
 use App\Models\User;
 
 use App\Models\ConferencesData;
+use App\Models\FeebBack;
 use Illuminate\Support\Carbon;
 
 
@@ -80,7 +81,8 @@ class ConferenceController extends Controller
                     'email_sent_status'=>'pending',
                     'user_created_at'=>$currentDateTime,                
                 ]);
-    
+
+
                 return response()->json([
                     'message' => 'Conference Details Added Successfully',
                     'status_code'=>'200'

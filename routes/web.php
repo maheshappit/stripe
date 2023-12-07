@@ -7,6 +7,7 @@ use App\Http\Controllers\ConferenceController;
 use App\Http\Controllers\SuperAdminController;
 
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\HomeController;
 
 Route::get('/', function () {
     return redirect(route('login'));
@@ -23,6 +24,7 @@ Route::post('superadmin/register',[AdminController::class,'create'])->name('supe
 
 
 
+Route::get('/download-csv', [HomeController::class,'downloadCSV']);
 
 
 
@@ -46,9 +48,7 @@ Route::middleware(['checkUserRole'])->group(function () {
     Route::get('/upload-csv-progress', [CsvController::class,'progress'])->name('progress');
     Route::any('/all-conferences/{id}', [App\Http\Controllers\HomeController::class,'allClients'])->name('all-conferences');
     Route::any('/all-articles/{id}', [App\Http\Controllers\HomeController::class,'allTopics'])->name('all-articles');
-
-
-    Route::post('sent/emails', [App\Http\Controllers\HomeController::class,'sentEmail'])->name('user.sent.emails');
+    Route::any('sent/emails', [App\Http\Controllers\HomeController::class,'sentEmail'])->name('user.sent.emails');
 
     
 

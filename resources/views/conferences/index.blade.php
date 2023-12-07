@@ -173,11 +173,19 @@
 </div>
 
 <div class="item">
-<input type="checkbox" id="toggleCheckbox" disabled> Select All
+<input type="checkbox" id="toggleCheckbox" class="select-all" disabled> Select All
 <button id="hiddenButton" class="btn btn-success" style="display: none;">Sent Email</button>
     <table id="dtHorizontalExample" class="table">
+
+    <table id="table2" class="table">
+
+    
        
     </table>
+
+
+
+    <table id="mytable2" class="table"></table>
 
 
 </div>

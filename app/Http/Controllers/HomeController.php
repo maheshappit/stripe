@@ -1,5 +1,7 @@
 <?php
 
+
+
 namespace App\Http\Controllers;
 
 use App\Models\Conference;
@@ -11,6 +13,19 @@ use Illuminate\Support\Facades\Auth;
 use app\Models\User;
 
 
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Reader\Exception;
+use PhpOffice\PhpSpreadsheet\Writer\Xls;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+
+
+
+use App\Exports\ExportUsers;
+use App\Models\FeebBack;
+use Maatwebsite\Excel\Facades\Excel;
+
+use Illuminate\Support\Facades\Response;
 
 use Illuminate\Support\Carbon;
 
@@ -57,47 +72,87 @@ class HomeController extends Controller
         }
 
 
-        $encodedClientNames = array_map('utf8_encode', $conferenceNames);
-        return response()->json(['conferenceNames' => $encodedClientNames]);
+        // $encodedClientNames = array_map('utf8_encode', $conferenceNames);
+        return response()->json(['conferenceNames' => $conferenceNames]);
     }
 
-    public function sentEmail(Request $request){
+    private function arrayToCsv($array)
+    {
+        $output = fopen('php://output', 'w');
+
+        // Add headers
+        fputcsv($output, array_keys($array[0]));
+
+        // Add data
+        foreach ($array as $row) {
+            fputcsv($output, $row);
+        }
+
+        fclose($output);
+
+        return ob_get_clean();
+    }
 
 
+
+    public function sentEmail(Request $request)
+    {
         $now = Carbon::now();
-
-
         $currentDateTime = $now->toDateString();
-        
 
-       $whole_data= $request->selectedData;
+        if (!empty($request->selectedData)) {
+            foreach ($request->selectedData as $email) {
 
-    //    dd($whole_data);
-        if(!empty($request->selectedData)){
-            foreach($whole_data as $email){
+                if (isset($email['email'])) {
 
-                if(isset($email['email'])){
-
-                    $original_email=$email['email'];
-                    $conference=Conference::where('email',$original_email)->where('conference', 'LIKE', '%' . $request->conference . '%')->first();
-                    if($conference){
-                        $conference->email_sent_status='sent';
-                        $conference->email_sent_date=$currentDateTime;
+                    $original_email = $email['email'];
+                    $conference = Conference::where('email', $original_email)->where('conference', 'LIKE', '%' . $request->conference . '%')->first();
+                    if ($conference) {
+                        $conference->email_sent_status = 'sent';
+                        $conference->email_sent_date = $currentDateTime;
                         $conference->save();
                     }
-
-        
-
                 }
             }
-
-            return response()->json([
-                'message' => 'Email  Status Changed Successfully',
-                'status_code'=>'200'
-                
-            ],200);
         }
+
+
+        $data = $request->selectedData;
+
+        $csvFileName = 'example.csv';
+        // Set the headers for the response
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename=' . $csvFileName,
+        ];
+
+        // Create a StreamedResponse
+        $response = new StreamedResponse(function () use ($data) {
+            $handle = fopen('php://output', 'w');
+
+
+
+            // Output the CSV header
+            fputcsv($handle, ['id', 'name', 'email', 'article', 'country', 'conference', 'user_created_at', 'user_updated_at', 'user_id', 'download_count', 'created_at', 'updated_at', 'email_sent_status', 'email_sent_date', 'client_status', 'posted_by', 'DT_RowIndex']);
+
+            // Output the CSV data
+            foreach ($data as $row) {
+                fputcsv($handle, $row);
+            }
+
+            fclose($handle);
+        }, 200, $headers);
+
+        // Get the underlying Symfony response instance
+        $symfonyResponse = $response->prepare(request());
+
+        // Include a status message in the response headers
+        $symfonyResponse->headers->set('X-Status-Message', 'Emails Status Changed Successfully');
+
+        return $symfonyResponse;
     }
+
+
 
 
     public function allTopics(Request $request, $id)
@@ -140,22 +195,18 @@ class HomeController extends Controller
     public function update(Request $request)
     {
 
-        // dd($request->id);
 
         $now = Carbon::now();
-
-
         $currentDateTime = $now->toDateString();
-
         $user = Conference::find($request->id);
-
-
         $validator = Validator::make($request->all(), [
             'name' => 'required',
         ]);
         if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator);
+            return response()->json(['errors' => $validator->errors()], 422);
         } else {
+
+            // dd($request->client_status);
 
             $user->update([
                 'name' => $request->name,
@@ -164,10 +215,36 @@ class HomeController extends Controller
                 'email' => $request->email,
                 'country' => $request->country,
                 'updated_at' => $currentDateTime,
-                'client_status'=>$request->client_status,
+                'client_status' => $request->client_status,
             ]);
-        }
 
-        return redirect()->route('home')->with('success', 'User Updated Successfully.');
+
+
+
+
+         
+
+
+                    $feedback = FeebBack::create([
+                        'comment' => $request->comment,
+                        'email' => $request->email,
+                        'conference' => $request->conference,
+                        'article' => $request->article,
+                        'client_status' => $request->client_status,
+                        'comment_created_date'=>$currentDateTime
+                    ]);
+                   
+
+
+                    return response()->json([
+                        'status_code' => '200',
+                        'message' => 'Client Updated Successfully',
+                    ]);
+                }
+            
+
+           
+
+        }
     }
-}
+

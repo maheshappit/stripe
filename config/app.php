@@ -172,6 +172,8 @@ return [
         App\Providers\RouteServiceProvider::class,
         Yajra\DataTables\DataTablesServiceProvider::class,
 
+
+
     ])->toArray(),
 
     /*
@@ -189,6 +191,8 @@ return [
         // 'Example' => App\Facades\Example::class,
         Jrean\UserVerification\UserVerificationServiceProvider::class,
         'DataTables' => Yajra\DataTables\Facades\DataTables::class,
+
+
 
 
     ])->toArray(),

@@ -30,7 +30,9 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/linways/table-to-excel@v1.0.4/dist/tableToExcel.js"></script>
 
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
 
     <style>
 
@@ -282,7 +284,7 @@ table.dataTable > tbody > tr {
 
 
 
-            myTable.buttons().disable();
+            // myTable.buttons().disable();
 
 
 
@@ -353,22 +355,75 @@ table.dataTable > tbody > tr {
       console.log('Show entries changed to:', len);
     });
 
-        $('#toggleCheckbox').on('change', function() {
+//         $('#toggleCheckbox').on('change', function() {
 
-        var isChecked = $(this).prop('checked');
-            myTable.buttons().enable();
 
-        $('.checkbox').prop('checked', this.checked);
+//             var tr = $(this).closest('tr');
+//         var isSelected = this.checked;
+
+//         // Toggle the selected class on the row
+//         tr.toggleClass('selected', isSelected);
+//             myTable.rows().nodes().to$().find('.checkbox').prop('checked', isSelected);
+
+// // Toggle the selected class on all rows
+// myTable.rows().nodes().to$().toggleClass('selected', isSelected);
 
        
+//     });
+
+    // $('#dtHorizontalExample tbody').on('change', '.checkbox', function() {
+    //     // Uncheck "Select All" if any individual checkbox is unchecked
+    //     var tr = $(this).closest('tr');
+    //     var isSelected = this.checked;
+
+    //     // Toggle the selected class on the row
+    //     tr.toggleClass('selected', isSelected);
+
+    //     $("#hiddenButton").show();
+
+
+        
+    // });
+
+
+     // Event listener for checkbox change
+     $('#dtHorizontalExample tbody').on('change', '.checkbox', function() {
+        var tr = $(this).closest('tr');
+        var isSelected = this.checked;
+
+        // Toggle the selected class on the row
+        tr.toggleClass('selected', isSelected);
+
+        // If "Select All" checkbox is clicked
+        if ($(this).hasClass('select-all')) {
+            // Update all checkboxes in the table
+            myTable.rows().nodes().to$().find('.checkbox').prop('checked', isSelected);
+
+            // Toggle the selected class on all rows
+            myTable.rows().nodes().to$().toggleClass('selected', isSelected);
+        } else {
+            // Check the "Select All" checkbox if all checkboxes are checked
+            var allCheckboxes = myTable.rows().nodes().to$().find('.checkbox');
+            var allChecked = allCheckboxes.length === allCheckboxes.filter(':checked').length;
+            myTable.rows().nodes().to$().find('.select-all').prop('checked', allChecked);
+        }
+
+        // Get the updated selected rows' data
+        var selectedData = myTable.rows('.selected').data().toArray();
     });
 
-    $('#dtHorizontalExample tbody').on('change', '.checkbox', function() {
-        // Uncheck "Select All" if any individual checkbox is unchecked
-        if (!this.checked) {
-            $('#toggleCheckbox').prop('checked', false);
-        }
+    // Event listener for "Select All" checkbox change
+        $('#toggleCheckbox').on('change', function() {
+    var isSelected = this.checked;
+
+        // Update all checkboxes in the table
+        myTable.rows().nodes().to$().find('.checkbox').prop('checked', isSelected);
+
+        // Toggle the selected class on all rows
+        myTable.rows().nodes().to$().toggleClass('selected', isSelected);
     });
+    
+    
 
 
             $('#searchButton').on('click', function(e) {
@@ -381,14 +436,28 @@ table.dataTable > tbody > tr {
             });
 
             $('#hiddenButton').on('click', function() {
-                var selectedData = myTable.rows({ selected: true }).data().toArray();
-                console.log(selectedData);
+                
+
+               
+        var selectedData = myTable.rows('.selected').data().toArray();
+
+
+       
+
+        
+
+    // Now, filter the selectedData based on the checkbox status
+    console.log(selectedData);
 
                 var conference_id =  $('#conference').val();
 
                 var routeUrl = "{{ route('user.sent.emails') }}"; // Replace 'your.route' with the actual route name
 
                 var csrfToken = $('meta[name="csrf-token"]').attr('content');
+
+
+                var selectedData = myTable.rows('.selected').data().toArray();
+
 
                    $.ajax({
                     type: 'POST',
@@ -401,17 +470,38 @@ table.dataTable > tbody > tr {
 
 
                     },
-                    success: function(response) {
+                    success: function(response,status,xhr) {
                     // Handle the response from the controller if needed
 
-                    if (response.status_code == '200') {
-                            toastr.success(response.message);
-                    }   
+
+                     // Create a Blob from the response
+                     var blob = new Blob([response], { type: 'text/csv' });
+                        
+                        // Create a link to download the file
+                        var link = document.createElement('a');
+                        link.href = window.URL.createObjectURL(blob);
+                        link.download = 'downloaded_data.csv';
+
+                        // Append the link to the body and trigger the download
+                        document.body.appendChild(link);
+                        link.click();
+
+                        // Remove the link from the body
+                        document.body.removeChild(link);
+
+
+
+                        var statusMessage = xhr.getResponseHeader('X-Status-Message');
+                        toastr.success(statusMessage);
+                        
+                        $("#toggleCheckbox").prop("checked", false);
+
 
                 },
-                    error: function(error) {
-                    console.log('Error:', error);
-                    }
+                error: function (xhr, status, error) {
+                    // Handle errors here
+                    console.error('Error downloading CSV file:', error);
+                }
                      });
                         });
 
@@ -583,7 +673,6 @@ table.dataTable > tbody > tr {
             var selectedCountryId = $(this).val();
             var selectedCountryName = $(this).find('option:selected').text();
 
-            console.log(selectedCountryId);
 
 
 
@@ -599,7 +688,6 @@ table.dataTable > tbody > tr {
                     dataType: 'json', // Expect JSON response
                     success: function (data) {
 
-                        console.log(data.topicNames);
                         // Update the result div with the received client names
                         $('#article').html(displayClientNames(data.topicNames));
                     },

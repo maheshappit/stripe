@@ -29,7 +29,8 @@ class Conference extends Model
         'user_created_at',
         'user_updated_at',
         'email_sent_status',
-        'email_sent_date'
+        'email_sent_date',
+        'client_status',
     ];
 
     public static function rules($id = null)

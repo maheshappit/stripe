@@ -90,6 +90,7 @@ class CsvController extends Controller
                     'country' => $row['Country'],
                     'user_id' => $request->user()->id,
                     'user_updated_at' => $currentDateTime,
+                    'email_sent_date'=>null
                     // 'updated_at'=>'',
                 ]);
                 $update_count++;
@@ -107,7 +108,7 @@ class CsvController extends Controller
                     'user_id' => $request->user()->id,
                     'user_created_at' => $currentDateTime,
                     'email_sent_status'=>'pending',
-                    'email_sent_date'=>'',
+                    'email_sent_date'=>null,
                     // 'updated_at'=>'',
 
                 ]);
